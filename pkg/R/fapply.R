@@ -32,6 +32,14 @@ fapply.default <- function (formula,
                         addFreq=TRUE,
                         ...)
 {
+
+    if(!is.data.frame(data)) {
+        data <- tryCatch(as.data.frame(data),
+                  error=function(e) if(is.environment(data)) data
+                        else stop(e)
+                  )
+    }
+
     m <- match.call(expand.dots = FALSE)
     dots <- m$...
     if(attr(terms(formula,data=data),"response")){

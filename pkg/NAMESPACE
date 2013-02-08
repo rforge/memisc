@@ -10,13 +10,6 @@ export(
       getSummary,
       getSummary.glm,
       getSummary.lm,
-      getSummary.polr,
-      getSummary.simex,
-      getSummary.lmer,
-      getSummary.mer,
-      getSummary.expcoef,
-      getSummary.expcoef.glm,
-      getSummary.clm,
       applyTemplate,
       getSummaryTemplate,
       setSummaryTemplate,
@@ -36,9 +29,9 @@ export(
       Aggregate,
       genTable,
       Table,
+      Table2,
       percent,
-      percent.default,
-      percent.logical,
+      percent2,
       By,
       Sapply,
       Lapply,
@@ -47,6 +40,7 @@ export(
       as.array,
       prediction.frame,
       Termplot,
+      panel.errbars,
       retain,
       #split.matrix,
       #coll.arrays,
@@ -63,7 +57,24 @@ export(
       uninclude,
       detach.sources,
       UnZip,
-      "%nin%"
+      "%nin%",
+      getSummary.clm,        # Christopher N. Lawrence
+      getSummary.polr,
+      getSummary.simex,
+      getSummary.expcoef,    # Dave Atkins
+      getSummary.expcoef.glm,
+      getSummary.aftreg,     # Jason Morgan
+      getSummary.coxph,      
+      getSummary.phreg,
+      getSummary.survreg,
+      getSummary.weibreg,
+      getSummary.mer,
+      getSummary.ivreg,       # Achim Zeileis
+      getSummary.tobit,
+      getSummary.hurdle,
+      getSummary.zeroinfl,
+      getSummary.betareg,
+      getSummary.multinom
       )
 S3method(getSummary,lm)
 S3method(getSummary,glm)

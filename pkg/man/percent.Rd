@@ -1,12 +1,13 @@
 \name{percent}
 \alias{percent}
+\alias{percent2}
 \alias{percent.default}
 \alias{percent.logical}
 \title{Table of Percentages with Percentage Base}
 \description{
   \code{percent} returns a table of percentages along with
   the percentage base. It will be useful
-  in conjunction with \code{\link{aggregate.formula}}.
+  in conjunction with \code{\link{Aggregate}} or \code{\link{genTable}}.
 }
 \usage{
   percent(x,\dots)

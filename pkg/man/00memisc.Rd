@@ -18,21 +18,22 @@ The tools in this package can be grouped into five major categories:
 }
 \section{Data preparation and management}{
 
-  \strong{Recoding}
-  
-  \code{memisc} also contains facilities for recoding
+  \pkg{memisc} contains facilities for recoding
   survey items. Simple recodings, for example collapsing answer
   categories, can be done using the function \code{\link{recode}}. More
   complex recodings, for example the construction of indices from
   multiple items, and complex case distinctions, can be done
   using the function \code{\link{cases}}. This function may also
   be useful for programming, in so far as it is a generalization of
-  \code{\link{ifelse}}.
+  \code{\link{ifelse}}. An extensive infrastructure to
+  handle `variable labels', `value labels', and `user-defined missing values'
+  as one may know them from Stata or SPSS are provided in a companion package
+  called \pkg{codebooks}.
 
   }
 
 \section{Data Analysis}{
-\strong{Tables and Data Frames of Descriptive Statistics}
+\subsection{Tables and Data Frames of Descriptive Statistics}{
 
   \code{\link{genTable}} is a generalization of \code{\link{xtabs}}:
   Instead of counts, also descriptive statistics like means or variances
@@ -40,9 +41,9 @@ The tools in this package can be grouped into five major categories:
   percentages of a factor can be obtained using this function.
   \code{\link{Aggregate}} is a variation of \code{genTable} that returns
   a data frame instead of a table.
-  
+  }
 
-\strong{Per-Subset Analysis}
+\subsection{Per-Subset Analysis}{
 
   \code{\link{By}} is a variant of the
   standard function \code{\link[base]{by}}: Conditioning factors
@@ -50,9 +51,8 @@ The tools in this package can be grouped into five major categories:
   obtained from the data frame the subsets of which are to be analysed.
   Therefore there is no need to \code{\link{attach}} the data frame
   or to use the dollar operator.
-  
-
-\strong{Graphical Model Comparison}
+}
+\subsection{Graphical Model Comparison}{
 
   \code{\link{Termplot}} is a variant and an extension of \code{\link[stats]{termplot}}:
   The plots are similar to those of \code{termplot} but uses \code{\link[lattice]{lattice}}
@@ -62,8 +62,9 @@ The tools in this package can be grouped into five major categories:
 
   Use \code{example(Termplot)} or \code{demo(Termplot)} for an example.
 }
+}
 \section{Presentation of Results of Statistical Analysis}{
-\strong{Publication-Ready Tables of Coefficients}
+\subsection{Publication-Ready Tables of Coefficients}{
 
 Journals of the Political and Social Sciences usually require
 that estimates of regression models are presented in the following
@@ -94,9 +95,9 @@ form:
 Such tables of coefficient estimates can be produced
 by \code{\link{mtable}}. To see some of the possibilities of
 this function, use \code{example(mtable)}.
+}
 
-
-\strong{LaTeX Representation of R Objects}
+\subsection{LaTeX Representation of R Objects}{
 
 Output produced by \code{\link{mtable}} can be transformed into
 LaTeX tables by an appropriate method of the generic function
@@ -107,6 +108,7 @@ results produced by \code{\link{genTable}} can be coerced into
 \code{\link[stats]{ftable}} objects. Also, a default method
 for the \code{toLatex} function is defined which coerces its
 argument to a matrix and applies the matrix method of \code{toLatex}.
+}
 }
 \section{Simulation}{
 The \code{memisc} package defines a function \code{\link{Simulate}},
@@ -119,7 +121,7 @@ Use \code{example(Simulate)}, \code{demo(monte.carlo)}, \code{demo(lm.monte.carl
 \code{demo(random.walk)}, or \code{demo(schellings)} for examples.
 }
 \section{Programming}{
-\strong{Looping over Variables}
+\subsection{Looping over Variables}{
 
   Sometimes users want to contruct loops that run over variables rather than values.
   For example, if one wants to set the missing values of a battery of items.
@@ -127,11 +129,11 @@ Use \code{example(Simulate)}, \code{demo(monte.carlo)}, \code{demo(lm.monte.carl
   To set 8 and 9 as missing values for the items \code{knowledge1},
   \code{knowledge2}, \code{knowledge3}, one can use
   \preformatted{
-    foreach(x=c(knowledge1,knowledge2,knowledge3),
-        x[x %in% 8:9] <- NA)
+    Foreach(x=c(knowledge1,knowledge2,knowledge3),
+        x[x \%in\% 8:9] <- NA)
   }
-
-\strong{Changing Names of Objects and Labels of Factors}
+}
+\subsection{Changing Names of Objects and Labels of Factors}{
 
   \code{R} already makes it possible to change the names of an object.
   Substituting the \code{\link[base]{names}} or \code{\link[base]{dimnames}}
@@ -141,8 +143,8 @@ Use \code{example(Simulate)}, \code{demo(monte.carlo)}, \code{demo(lm.monte.carl
   that implement these tricks in a convenient way, so that programmers
   (like the author of this package) need not reinvent the weel in
   every instance of changing names of an object.
-
-\strong{Combining Vectors and Arrays by Names}
+}
+\subsection{Combining Vectors and Arrays by Names}{
 
 The generic function \code{\link{collect}} collects several objects of the
 same mode into one object, using their names, \code{rownames},
@@ -150,9 +152,9 @@ same mode into one object, using their names, \code{rownames},
 atomic vectors, arrays (including matrices), and data frames.
 For example
 \preformatted{
-a <- c(a=1,b=2)
-b <- c(a=10,c=30)
-collect(a,b)
+x <- c(a=1,b=2)
+y <- c(a=10,c=30)
+collect(x,y)
 }
 leads to
 \preformatted{
@@ -161,14 +163,15 @@ a  1 10
 b  2 NA
 c NA 30
 }
-
-\strong{Reordering of Matrices and Arrays}
+}
+\subsection{Reordering of Matrices and Arrays}{
 
   The \code{memisc} package includes a \code{\link{reorder}}
   method for arrays and matrices. For example, the matrix
   method by default reorders the rows of a matrix according the results
   of a function.
+  
 }
-
+}
 
 \keyword{misc}

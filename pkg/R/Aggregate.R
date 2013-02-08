@@ -85,12 +85,6 @@ genTable <- function (formula,
    else {
      data <- force(data)
    }
-   if(!is.data.frame(data)) {
-      data <- tryCatch(as.data.frame(data),
-                error=function(e) if(is.environment(data)) data
-                      else stop(e)
-                )
-   }
    m$data <- data
    
    if("." %in% all.vars(fcall)){
@@ -235,15 +229,12 @@ Aggregate <- function (formula,
    fcall <- formula[[2]]
 
    if(mis.data){
-     m$data <- parent.frame()
      data <- parent.frame()
    }
    else {
-     m$data <- data <- force(data)
+     data <- force(data)
    }
-   if(!is.environment(data) && !is.data.frame(data)) data <- as.data.frame(data)
-
-
+   m$data <- data
 
    if("." %in% all.vars(fcall)){
 

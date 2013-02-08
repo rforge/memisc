@@ -67,7 +67,7 @@ percent2.default <- function(x,by,weights=NULL,total=!(se || ci),
         tmp[,2] <- 100*lower
         tmp[,3] <- 100*upper
         dim(tmp) <- c(dim(perc),3)
-        dimnames(tmp) <- c(dimnames(perc),list(perc.label,"lower","upper"))
+        dimnames(tmp) <- c(dimnames(perc),list(c(perc.label,"lower","upper")))
         perc <- tmp
         }
       else {
@@ -78,7 +78,7 @@ percent2.default <- function(x,by,weights=NULL,total=!(se || ci),
         tmp[,n3+2] <- 100*upper
         dim(tmp) <- c(dim(perc),n3+2)
         dimnames(tmp) <- c(dimnames(perc)[1:2],
-                          c(dimnames(perc)[[3]],"lower","upper")
+                          list(c(dimnames(perc)[[3]],"lower","upper"))
                           )
         perc <- tmp
       }
@@ -89,7 +89,7 @@ percent2.default <- function(x,by,weights=NULL,total=!(se || ci),
         tmp[,1] <- perc
         tmp[,2] <- tabsum
         dim(tmp) <- c(dim(perc),2)
-        dimnames(tmp) <- c(dimnames(perc),list(perc.label,total.name))
+        dimnames(tmp) <- c(dimnames(perc),list(c(perc.label,total.name)))
         perc <- tmp
         }
       else {
@@ -121,7 +121,6 @@ percent2.logical <- function(x,by,weights=NULL,total=!(se || ci),
                       se=FALSE,ci=FALSE,ci.level=.95,
                       total.name="N",perc.label="Percentage",...){
   subst <- substitute(x)
-  x.label <- paste(deparse(subst))
   tab <- Table2(x,by=by,weights=weights,total=FALSE,percentage=FALSE,counts=TRUE,style="table",...)
   tab <- t(tab)
   N <- rowSums(tab)
@@ -131,7 +130,7 @@ percent2.logical <- function(x,by,weights=NULL,total=!(se || ci),
   if(se){
     var <- p*(1-p)/N
     perc <- cbind(perc,100*sqrt(var))
-    colnames(perc) <- c(x.label,"se")
+    colnames(perc) <- c(perc.label,"se")
   }
   if(ci){
     alpha <- (1-ci.level)/2
@@ -144,14 +143,14 @@ percent2.logical <- function(x,by,weights=NULL,total=!(se || ci),
     if(NCOL(perc)>1) perc <- cbind(perc,lower=100*lower,upper=100*upper)
     else {
       perc <- cbind(perc,100*lower,100*upper)
-      colnames(perc) <- c(x.label,"lower","upper")
+      colnames(perc) <- c(perc.label,"lower","upper")
     }
   }
   if(total){
     if(NCOL(perc)>1)
       cn <- c(colnames(perc),total.name)
     else
-      cn <- c(x.label,total.name)
+      cn <- c(perc.label,total.name)
     perc <- cbind(perc,N)
     colnames(perc) <- cn
   }

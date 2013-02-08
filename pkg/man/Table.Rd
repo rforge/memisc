@@ -2,6 +2,7 @@
 \alias{Table}
 \alias{Table.default}
 \alias{Table.factor}
+\alias{Table2}
 \title{One-Dimensional Table of Frequences and/or Percentages}
 \description{
   \code{Table} is a generic function that

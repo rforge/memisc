@@ -4,8 +4,19 @@ Title: Tools for Management of Survey Data, Graphics, Programming,
         Statistics, and Simulation
 Version: 0.99
 Date: 2012-07-19
+Authors@R: c(person("Martin","Elff",role=c("aut","cre"),email="elff@gmx.com"),
+            person(c("Christopher"," N."),"Lawrence",role="ctb"),
+            person(c("Jason","W."),"Morgan",role="ctb"),
+            person("Zeileis","Achim",role="ctb"),
+            person("Dave","Atkins",role="ctb")
+            )
 Author: Martin Elff
-Maintainer: Martin Elff <melff@essex.ac.uk>
+  (with contributions from
+    Christopher N. Lawrence,
+    Dave Atkins,
+    Jason W. Morgan,
+    and Achim Zeileis)
+Maintainer: Martin Elff <elff@gmx.com>
 Description: This provides functionality to produce
         tables and data frames of arbitrary descriptive statistics and
         (almost) publication-ready tables of regression model

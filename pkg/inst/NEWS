@@ -1,3 +1,8 @@
+2012-07-22:
+  - Integrated further extensions for 'mtable': Thanks to contributions
+    from Jason W. Morgan and Achim Zeileis 'mtable' now handles various survival models,
+    hurdle models, zero-inflated models, instrumental variable models, etc.
+
 2012-07-20:
   - Renamed function 'foreach' into 'Foreach' to avoid conflicts with the 'foreach'
     package.
