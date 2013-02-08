@@ -1,3 +1,8 @@
+2012-10-01:
+  - Implemented 'cbind' and 'rbind' methods for 'ftable' objects. These
+    return objects of classes 'cbound_ftables' and 'rbound_ftables', respectively.
+    'format' and 'print' methods are defined for these classes.
+
 2012-07-22:
   - Integrated further extensions for 'mtable': Thanks to contributions
     from Jason W. Morgan and Achim Zeileis 'mtable' now handles various survival models,

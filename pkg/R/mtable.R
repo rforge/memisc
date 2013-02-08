@@ -151,17 +151,43 @@ mtable <- function(...,
         ans[ans=="()"] <- ""
         return(ans)
   }
-  getCoef <- function(i){
-        coef.i <- summaries[[i]]$coef
-        contrasts.i <- summaries[[i]]$contrasts
-        xlevels.i <- summaries[[i]]$xlevels
-        if(is.list(coef.i))
-          lapply(coef.i,getCoef1,contrasts=contrasts.i,xlevels=xlevels.i)
-        else
-          getCoef1(coef.i,contrasts=contrasts.i,xlevels=xlevels.i)
-      }
 
-  coefs <- lapply(seq(n.args),getCoef)
+#   getCoef <- function(i){
+#         coef.i <- summaries[[i]]$coef
+#         contrasts.i <- summaries[[i]]$contrasts
+#         xlevels.i <- summaries[[i]]$xlevels
+#         if(is.list(coef.i))
+#           lapply(coef.i,getCoef1,contrasts=contrasts.i,xlevels=xlevels.i)
+#         else
+#           getCoef1(coef.i,contrasts=contrasts.i,xlevels=xlevels.i)
+#       }
+
+  getEstimates <- function(i,estimates,contrasts,xlevels){
+        est.i <- estimates[[i]]
+        if(!length(est.i)) return(NULL)
+        contrasts.i <- contrasts[[i]]
+        xlevels.i <- xlevels[[i]]
+        if(is.list(est.i))
+          lapply(est.i,getCoef1,contrasts=contrasts.i,xlevels=xlevels.i)
+        else
+          getCoef1(est.i,contrasts=contrasts.i,xlevels=xlevels.i)
+  }
+
+  coefs <- lapply(summaries,"[[","coef")
+  estimates <- lapply(summaries,"[[","estimates")
+  estnames <- unique(c("coef",unlist(lapply(estimates,names))))
+  estimates <- sapply(estnames,function(n)lapply(estimates,"[[",n),simplify=FALSE)
+  estimates$coef[sapply(estimates$coef,is.null) & !sapply(coefs,is.null)] <- coefs[sapply(estimates$coef,is.null) & !sapply(coefs,is.null)]
+  
+  contr <- lapply(summaries,"[[","contrasts")
+  xlev <- lapply(summaries,"[[","xlevels")
+
+#   coefs <- lapply(seq(n.args),getEstimates,coefs,contr,xlev)
+  estimates <- lapply(estnames,function(n)lapply(seq(n.args),getEstimates,estimates[[n]],contr,xlev))
+  names(estimates) <- estnames
+
+  coefs <- estimates$coef ## Continue refactoring later ...
+
   isList <- sapply(coefs,is.list)
   if(any(isList)){
     all.names <- unique(unlist(lapply(coefs,names)))
@@ -198,6 +224,7 @@ mtable <- function(...,
 
   dimnames(coefs)[[n.dims]] <- argnames
 
+  
   if(drop && length(dim(coefs))>3 ){
     cdims <- dim(coefs)
     ckeep <- cdims > 1 | 1:length(dim(coefs)) <= 3
@@ -336,6 +363,7 @@ format.mtable <- function(x,
           center.summaries=FALSE,
           drop=TRUE,
           shrink=FALSE,
+          summary.format=character(),
           ...
           ){
 
@@ -552,15 +580,30 @@ format.mtable <- function(x,
     
     coefs <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",coefs)
     if(length(summaries)){
-      if(nrow(summaries)>1)
-          summaries <- apply(summaries,2,centerAt,
-                            at=center.at,
-                            integers=align.integers)
+#       if(nrow(summaries)>1)
+#           summaries <- apply(summaries,2,centerAt,
+#                             at=center.at,
+#                             integers=align.integers)
       if(!useDcolumn){
         tmpatt <- attributes(summaries)
         summaries <- paste("$",summaries,"$",sep="")
         attributes(summaries) <-tmpatt
         }
+      if(length(summary.format)){
+        if(!length(names(summary.format)) && length(summary.format ==1)){
+          tmp <- character(nrow(summaries))
+          tmp[]<-summary.format
+          names(tmp) <- rownames(summaries)
+          summary.format <- tmp
+        }
+        for(n in names(summary.format)){
+
+          tmp <- summaries[n,]
+          fmt <- summary.format[n]
+          tmp <- sapply(tmp,function(x)gsub("#",x,fmt))
+          summaries[n,] <- tmp
+        }
+      }
       tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
       if(center.summaries)
           sumpos <- (dim(tmp.sumry)[2]+1)%/%2

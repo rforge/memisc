@@ -50,6 +50,7 @@ mtable(...,coef.style=getOption("coef.style"),
     center.summaries=FALSE,
     drop = TRUE,
     shrink = FALSE,
+    summary.format=character(),
     ...
     )
 
@@ -131,6 +132,15 @@ write.mtable(object,file="",...)
       the respective model coefficients. }
      \item{shrink}{logical value; if TRUE, inter-column space of the LaTeX \code{tabular} environment
       is shrunk using \code{@{}} }
+     \item{summary.format}{an optional character vector.
+          If the character vector has a positive length, it should contain
+          formatting templates like \code{\\some.tex.command{#}}.
+
+          If the character vector has length one and is unnamed, the formatting template is
+          applied to all summaries. Otherwise, the template is applied to
+          those summaries indicated by the names of the \code{summary.format}
+          argument.
+          }
      \item{file}{a file where to write to; defaults to console output.}
 }
 \details{
@@ -173,10 +183,13 @@ file.show(file123)
 # The contents of this file can be pasted into Word
 # and converted into a Word table.
 }
-\dontshow{toLatex(mtable123)}
+
 \dontrun{texfile123 <- "mtable123.tex"
-write.mtable(mtable123,forLaTeX=TRUE,file=texfile123)
+writeLines(toLatex(mtable123,
+                   summary.format=c(N="\\\\multicolumn{1}{l}{#}")),
+            con=texfile123)
 file.show(texfile123)}
+\dontshow{toLatex(mtable123,summary.format=c(N="\\\\multicolumn{1}{l}{#}"))}
 
 berkeley <- Aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 

@@ -1,10 +1,9 @@
 \name{sort-methods}
 \alias{sort.data.frame}
-\alias{sort.data.set}
 \title{Convenience Methods to Sort Data Frames and Data Sets}
 \description{
-The methods below return a sorted version of
-the data frame or data set, given as first argument.
+The method below returns a sorted version of
+the data frame given as first argument.
 }
 \usage{
 \method{sort}{data.frame}(x,decreasing=FALSE,by=NULL,na.last=NA,\dots)

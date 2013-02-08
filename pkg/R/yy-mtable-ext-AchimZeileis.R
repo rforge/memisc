@@ -46,6 +46,11 @@ getSummary.tobit <- function(obj, alpha = 0.05, ...) {
     s$coefficients[, 1] + qnorm(1 - alpha/2) * s$coefficients[, 2])
   colnames(cf) <- c("est", "se", "stat", "p", "lwr", "upr")
 
+  ## Improvement by ME: deal with log-scale parameter
+  sp.row <- match("Log(scale)",rownames(cf))
+  sp <- cf[sp.row,,drop=FALSE]
+  cf <- cf[-sp.row,,drop=FALSE]
+  
   ## further summary statistics
   sstat <- c(
     "scale" = s$scale,
@@ -59,7 +64,7 @@ getSummary.tobit <- function(obj, alpha = 0.05, ...) {
 
   ## return everything
   return(list(
-    coef = cf,
+    estimates = list(coef=cf,scale=sp),
     sumstat = sstat,
     contrasts = obj$contrasts,
     xlevels = obj$xlevels,

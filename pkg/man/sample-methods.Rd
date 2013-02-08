@@ -1,12 +1,12 @@
 \name{sample-methods}
 \alias{sample,data.frame-method}
-\title{Take a Sample from a Data Frame-like Object}
+\title{Take a Sample from a Data Frame}
 \description{
-  The methods below are convenience short-cuts to
-  take samples from data frames and data sets.
-  They result in a data frame or data set, respectively,
+  This method is a convenience short-cut to
+  take samples from data frames.
+  It results in a data frame
   the rows of which are a sample of the complete
-  data frame/data set.
+  data frame.
 }
 \usage{
 \S4method{sample}{data.frame}(x, size, replace = FALSE, prob = NULL)
@@ -19,7 +19,7 @@
     sampling takes place with or without replacement.}
   \item{prob}{a vector of sampling probabities or NULL.}
 }
-\value{A data frame or data set.}
+\value{A data frame.}
 
 \examples{
 for(.i in 1:4)

@@ -42,14 +42,9 @@ export(
       Termplot,
       panel.errbars,
       retain,
-      #split.matrix,
-      #coll.arrays,
-      #coll.vectors,
-      #toLatex.ftable,
       Foreach,
       syms,
       as.symbols,
-#       xapply,
       Substitute,
       collect,
       fapply,
@@ -106,6 +101,7 @@ S3method(Table2,default)
 S3method(Table2,factor)
 S3method(percent,default)
 S3method(percent,logical)
+S3method(percent,table)
 S3method(percent2,default)
 S3method(percent2,logical)
 S3method(By,default)
@@ -121,4 +117,9 @@ S3method(dim,textfile_bucket)
 S3method(as.data.frame,textfile_bucket)
 S3method(as.matrix,textfile_bucket)
 S3method("[",bucket)
-# S3method(groupwise,default)
+S3method(cbind,ftable)
+S3method(rbind,ftable)
+S3method(format,cbound_ftables)
+S3method(print,cbound_ftables)
+S3method(format,rbound_ftables)
+S3method(print,rbound_ftables)

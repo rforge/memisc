@@ -21,13 +21,14 @@
                 paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="")
              else "r",
     LaTeXdec=".",
-    ddigits=digits,
+    ddigits = max(1, digits),
     useBooktabs=TRUE,
     toprule=if(useBooktabs) "\\\\toprule" else "\\\\hline\\\\hline",
     midrule=if(useBooktabs) "\\\\midrule" else "\\\\hline\n",
     cmidrule=if(useBooktabs) "\\\\cmidrule" else "\\\\cline",
     bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
     extrarowsep = NULL,
+    oldstyle=FALSE,
     \dots)
 \method{toLatex}{matrix}(object,
     show.titles=TRUE,
@@ -77,6 +78,7 @@
      \item{bottomrule}{appearance of the bottom border of the LaTeX \code{tabular} environment.}
      \item{extrarowsep}{extra code to be inserted between the column titles and the
      table body produced by \code{toLatex}. }
+     \item{oldstyle}{logical; should the output format of previous memisc versions be used?}
      \item{\dots}{further argument, currently ignored.}
 }
 \examples{

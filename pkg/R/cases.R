@@ -17,9 +17,10 @@ cases <- function(...,check.xor=FALSE){
     #if(any(is.na(conditions))) stop("NA in logical condition")
     na.cond <- rowSums(is.na(conditions)) > 0
 
-    done <- rowSums(conditions)
-    if(check.xor && any(done!=1)) stop("conditions are neither exclusive nor exhaustive")
-    never <- colSums(conditions[!na.cond,,drop=FALSE]) == 0
+    done <- rowSums(conditions,na.rm=TRUE)
+    if(check.xor && (any(done!=1) || any(na.cond>0))) stop("conditions are neither exclusive nor exhaustive")
+    conditions[is.na(conditions)] <- FALSE
+    never <- colSums(conditions) == 0
     if(any(never)){
       neverlab <- deflabels[never]
       if(length(neverlab)==1)
@@ -41,11 +42,11 @@ cases <- function(...,check.xor=FALSE){
     }
     values <- do.call(cbind,values)
     res <- vector(nrow(conditions),mode=storage.mode(values))
-    conditions[na.cond,] <- FALSE
+    
     for(i in rev(1:ncol(conditions))){
       res[conditions[,i]] <- values[conditions[,i],i]
     }
-    res[na.cond] <- as.vector(NA,mode=storage.mode(values))
+    res[!done] <- as.vector(NA,mode=storage.mode(values))
     if(length(cond.names) && all(nzchar(cond.names))){
         uq.values <- drop(unique(values))
         if(length(uq.values)==length(cond.names))
@@ -66,9 +67,10 @@ cases <- function(...,check.xor=FALSE){
       labels <- ifelse(nzchar(labels),labels,deflabels)
     else labels <- deflabels
 
-    done <- rowSums(conditions)
-    if(check.xor && any(done!=1)) stop("conditions are neither exclusive nor exhaustive")
-    never <- colSums(conditions[!na.cond,,drop=FALSE]) == 0
+    done <- rowSums(conditions,na.rm=TRUE)
+    if(check.xor && (any(done!=1) || any(na.cond>0))) stop("conditions are neither exclusive nor exhaustive")
+    conditions[is.na(conditions)] <- FALSE
+    never <- colSums(conditions) == 0
     if(any(never)){
       neverlab <- deflabels[never]
       if(length(neverlab)==1)
@@ -76,13 +78,12 @@ cases <- function(...,check.xor=FALSE){
       else
         warning("conditions ",paste(neverlab,collapse=", ")," are never satisfied")
     }
-
     res <- integer(nrow(conditions))
-    conditions[na.cond,] <- FALSE
+    
     for(i in rev(1:ncol(conditions))){
       res[conditions[,i]] <- i
     }
-    res[na.cond] <- NA_integer_
+    res[!done] <- NA_integer_
     factor(res,levels=codes,labels=labels)
   }
   else stop("inconsistent arguments to 'cases'")
