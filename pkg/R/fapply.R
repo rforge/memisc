@@ -56,8 +56,8 @@ fapply.default <- function (formula,
     m$... <- m$exclude <- m$drop.unused.levels <- m$names <- m$addFreq <- NULL
     #m <- m[c(1,3,2)]
     m[[1]] <- as.name("model.frame")
-    if(!missing(subset)) m$subset <- NULL
-    else m$subset <- eval(substitute(subset),parent.frame())
+    if(missing(subset)) m$subset <- NULL
+    else m$subset <- eval(substitute(subset),data,parent.frame())
     m$data <- data
     by <- eval(m,parent.frame())
     omitted <- attr(by,"na.action")
