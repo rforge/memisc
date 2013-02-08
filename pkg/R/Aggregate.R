@@ -206,7 +206,19 @@ genTable <- function (formula,
     }
 }
 
-aggregate.formula <- function (x,
+# aggregate.formula <- function (x,
+#                         data = parent.frame(),
+#                         subset = NULL,
+#                         sort=TRUE,
+#                         labels=NULL,
+#                         addFreq=TRUE,
+#                         as.vars=NA,
+#                         drop.constants=TRUE,
+#                         dot = NULL,
+#                         ...)
+
+
+Aggregate <- function (formula,
                         data = parent.frame(),
                         subset = NULL,
                         sort=TRUE,
@@ -217,8 +229,6 @@ aggregate.formula <- function (x,
                         dot = NULL,
                         ...)
 {
-   formula <- x
-
    m <- match.call()
    mis.data <- missing(data)
 
@@ -255,7 +265,7 @@ aggregate.formula <- function (x,
         ffcall <- lapply(allvars,function(x)Substitute(fcall,list("."=x)))
         fcall <- as.call(c(quote(c),ffcall))
         formula[[2]] <- fcall
-        m$x <- formula
+        m$formula <- formula
       }
    }
 

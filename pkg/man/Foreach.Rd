@@ -1,13 +1,13 @@
-\name{foreach}
-\alias{foreach}
+\name{Foreach}
+\alias{Foreach}
 \title{Loop over Variables in a Data Frame or Environment}
 \description{
-  \code{foreach} evaluates an expression given as second argument by substituting
+  \code{Foreach} evaluates an expression given as second argument by substituting
   in variables. The expression may also contain assignments, which take effect in
   the callers environment.
 }
 \usage{
-  foreach(\dots)
+  Foreach(\dots)
 }
 \arguments{
   \item{\dots}{tagged and untagged arguments.
@@ -23,7 +23,7 @@ z <- c("Uri","Schwyz","Unterwalden")
 print(x)
 print(y)
 print(z)
-foreach(var=c(x,y,z),          # assigns names
+Foreach(var=c(x,y,z),          # assigns names
   names(var) <- letters[1:3]   # to the elements of x, y, and z
   )
 print(x)

@@ -19,7 +19,7 @@ retain(\dots, list = character(0), envir = parent.frame(),force=FALSE)
 }
 \examples{
 local({
-  foreach(x=c(a,b,c,d,e,f,g,h),x<-1)
+  Foreach(x=c(a,b,c,d,e,f,g,h),x<-1)
   cat("Objects before call to 'retain':\n")
   print(ls())
   retain(a)

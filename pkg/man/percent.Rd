@@ -72,6 +72,6 @@ ex.data <- within(ex.data,x.grp <- cases( x < 0,
                                           ))
 genTable(percent(x.grp)~mean+sd,data=ex.data)
 
-aggregate(percent(Admit,weight=Freq)~Gender+Dept,data=UCBAdmissions)
+Aggregate(percent(Admit,weight=Freq)~Gender+Dept,data=UCBAdmissions)
 }
 \keyword{univar}

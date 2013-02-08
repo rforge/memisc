@@ -38,11 +38,9 @@ The tools in this package can be grouped into five major categories:
   Instead of counts, also descriptive statistics like means or variances
   can be reported conditional on levels of factors. Also conditional
   percentages of a factor can be obtained using this function.
-
-  In addition a \code{\link[=aggregate.formula]{formula}} method for the \code{\link{aggregate}} generic
-  function is provided, see. It has the same syntax as \code{genTable}, but
-  gives a data frame of descriptive statistics instead of a \code{table}
-  object. 
+  \code{\link{Aggregate}} is a variation of \code{genTable} that returns
+  a data frame instead of a table.
+  
 
 \strong{Per-Subset Analysis}
 
@@ -125,12 +123,12 @@ Use \code{example(Simulate)}, \code{demo(monte.carlo)}, \code{demo(lm.monte.carl
 
   Sometimes users want to contruct loops that run over variables rather than values.
   For example, if one wants to set the missing values of a battery of items.
-  For this purpose, the package contains the function \code{\link{foreach}}.
+  For this purpose, the package contains the function \code{\link{Foreach}}.
   To set 8 and 9 as missing values for the items \code{knowledge1},
   \code{knowledge2}, \code{knowledge3}, one can use
   \preformatted{
     foreach(x=c(knowledge1,knowledge2,knowledge3),
-        missing.values(x) <- 8:9)
+        x[x %in% 8:9] <- NA)
   }
 
 \strong{Changing Names of Objects and Labels of Factors}

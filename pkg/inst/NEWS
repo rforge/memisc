@@ -1,3 +1,10 @@
+2012-07-20:
+  - Renamed function 'foreach' into 'Foreach' to avoid conflicts with the 'foreach'
+    package.
+  - Renamed the 'aggregate.formula' method into 'Aggregate' to avoid conflict with
+    the 'formula' method of the 'aggregate' generic function that is present in
+    new versions of R.
+
 2012-07-19:
   - Seperated out the infrastructure of 'item' and 'data.set' classes into another
     package called 'codebooks'.

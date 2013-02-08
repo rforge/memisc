@@ -33,6 +33,7 @@ export(
       pour_out,
       interrupt,
       trimws,
+      Aggregate,
       genTable,
       Table,
       percent,
@@ -51,7 +52,7 @@ export(
       #coll.arrays,
       #coll.vectors,
       #toLatex.ftable,
-      foreach,
+      Foreach,
       syms,
       as.symbols,
 #       xapply,
@@ -64,7 +65,6 @@ export(
       UnZip,
       "%nin%"
       )
-S3method(aggregate,formula)
 S3method(getSummary,lm)
 S3method(getSummary,glm)
 S3method(getSummary.expcoef,glm)

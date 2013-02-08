@@ -1,4 +1,4 @@
-Foreach <- foreach <- function(...){
+Foreach <- function(...){
   args <- match.call(expand.dots=FALSE)$...
   tags <- names(args)
   parent <- parent.frame()

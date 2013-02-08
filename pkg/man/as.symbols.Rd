@@ -4,7 +4,7 @@
 \title{Construction of Lists of Symbols}
 \description{
   \code{as.symbols} and \code{syms} are functions potentially useful
-  in connection with \code{foreach} and \code{xapply}.
+  in connection with \code{Foreach} and \code{xapply}.
   \code{as.symbols} produces a list of symbols from a character vector,
   while \code{syms} returns a list of symbols from symbols given as arguments,
   but it can be used to construct patterns of symbols.

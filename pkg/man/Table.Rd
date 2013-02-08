@@ -9,7 +9,7 @@
   and/or the corresponding percentages of an atomic vector,
   factor or \code{"item.vector"} object.
   This function is intended for use with
-  \code{\link{aggregate.formula}} or \code{\link{genTable}}.
+  \code{\link{Aggregate}} or \code{\link{genTable}}.
   }
 \usage{
 \S3method{Table}{default}(x,weights=NULL,counts=TRUE,percentage=FALSE,\dots)
@@ -30,7 +30,7 @@
 }
 \examples{
   with(as.data.frame(UCBAdmissions),Table(Admit,Freq))
-  aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
+  Aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 
   A <- sample(c(1:5),size=100,replace=TRUE)
   A <- factor(A,labels=letters[1:5])
