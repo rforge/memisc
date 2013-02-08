@@ -48,6 +48,8 @@ mtable(...,coef.style=getOption("coef.style"),
     bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
     interaction.sep = if(forLaTeX) " $\\\\times$ " else " x ",
     center.summaries=FALSE,
+    drop = TRUE,
+    shrink = FALSE,
     ...
     )
 
@@ -127,6 +129,8 @@ write.mtable(object,file="",...)
      \item{center.summaries}{logical value; if TRUE, summaries for
       each model are centered below the columns that correspond to
       the respective model coefficients. }
+     \item{shrink}{logical value; if TRUE, inter-column space of the LaTeX \code{tabular} environment
+      is shrunk using \code{@{}} }
      \item{file}{a file where to write to; defaults to console output.}
 }
 \details{

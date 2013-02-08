@@ -1,6 +1,6 @@
 allequal <- function(x) length(unique(x)) == 1
 
-get.substr <- function(pattern, text, perl = FALSE,
+get.substr <- function(pattern, text,  perl = FALSE,
         fixed = FALSE, useBytes = FALSE){
         if(fixed)
           rr <- gregexpr(pattern,text,fixed=TRUE,perl=FALSE,useBytes=useBytes)

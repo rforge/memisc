@@ -1,3 +1,11 @@
+2012-07-19:
+  - Seperated out the infrastructure of 'item' and 'data.set' classes into another
+    package called 'codebooks'.
+  - Improvements of genTable and aggregate.formula: Some aggregations should
+    be quicker because of internal use of the Table2 and percent2 functions.
+  - Improvement of mtable: LaTeX output of model tables where each model consumes
+    only one column is more compact.
+
 2012-02-14:
   - Replaced calls to .Internal(sample()) by calls to sample.int() and eliminated
     call to .Internal(int.unzip()). The package now depends on R >= 2.9.0

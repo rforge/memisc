@@ -24,8 +24,6 @@ reorder.array <- function(x,dim=1,names=NULL,indices=NULL,FUN=mean,...){
 
 reorder.matrix <- reorder.array
 
-lsl <- function() ls.str(envir=parent.frame())
-
 split.matrix <- function (x, f, drop = FALSE, dim.drop=TRUE, ...){
   index <- seq(nrow(x))
   if(length(index)==length(f)){

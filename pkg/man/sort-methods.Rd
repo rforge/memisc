@@ -8,10 +8,9 @@ the data frame or data set, given as first argument.
 }
 \usage{
 \method{sort}{data.frame}(x,decreasing=FALSE,by=NULL,na.last=NA,\dots)
-\method{sort}{data.set}(x,decreasing=FALSE,by=NULL,na.last=NA,\dots)
 }
 \arguments{
-  \item{x}{a data frame or data set.}
+  \item{x}{a data frame.}
   \item{decreasing}{a logical value, should sorting
     be in increasing or decreasing order?}
   \item{by}{

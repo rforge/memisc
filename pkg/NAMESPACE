@@ -2,9 +2,6 @@ useDynLib(memisc)
 import(stats,grid,lattice,methods,MASS)
 importFrom(utils,toLatex,head,tail,capture.output,getFromNamespace)
 export(
-      contr,
-      contr.treatment,
-      contr.sum,
       cases,
       colrename,
       dimrename,
@@ -21,14 +18,12 @@ export(
       getSummary.expcoef.glm,
       getSummary.clm,
       applyTemplate,
-      #get.substr,
       getSummaryTemplate,
       setSummaryTemplate,
       getCoefTemplate,
       setCoefTemplate,
       recode,
       relabel,
-      relabel4,
       rename,
       rowrename,
       Simulate,
@@ -39,66 +34,27 @@ export(
       interrupt,
       trimws,
       genTable,
-      #wtable,
       Table,
-      Descriptives,
       percent,
       percent.default,
       percent.logical,
       By,
-#      allequal,
       Sapply,
       Lapply,
       sort.data.frame,
-      sort.data.set,
       to.data.frame,
-#       to.array,
       as.array,
       prediction.frame,
       Termplot,
-      panel.errbars,
-      as.item,
-      labels,
-      "labels<-",
-      value.filter,
-      valid.values,
-      missing.values,
-      valid.range,
-      "valid.values<-",
-      "valid.range<-",
-      "missing.values<-",
-      measurement,
-      "measurement<-",
-      include.missings,
-      annotation,
-      "annotation<-",
-      description,
-      "description<-",
-      wording,
-      "wording<-",
-      is.missing,
-      is.valid,
-      nvalid,
-      is.nominal,
-      is.ordinal,
-      is.interval,
-      is.ratio,
-      contrasts,
-      "contrasts<-",
-      data.set,
-      as.data.set,
-      is.data.set,
       retain,
       #split.matrix,
       #coll.arrays,
       #coll.vectors,
-      #numericIfPossible,
       #toLatex.ftable,
       foreach,
       syms,
       as.symbols,
 #       xapply,
-#       groupwise,
       Substitute,
       collect,
       fapply,
@@ -106,21 +62,7 @@ export(
       uninclude,
       detach.sources,
       UnZip,
-      "%nin%",
-      codebook,
-      spss.fixed.file,
-      spss.portable.file,
-      spss.system.file,
-      Stata.file,
-      #seekData,
-      #readData,
-      query,
-      relabel4
-      #,
-      #rofile,
-      #readfixed,
-      #readfixedsubset,
-      #roreadline
+      "%nin%"
       )
 S3method(aggregate,formula)
 S3method(getSummary,lm)
@@ -147,8 +89,14 @@ S3method(collect,data.frame)
 S3method(collect,data.set)
 S3method(collect,by)
 S3method(fapply,default)
+S3method(Table,default)
+S3method(Table,factor)
+S3method(Table2,default)
+S3method(Table2,factor)
 S3method(percent,default)
 S3method(percent,logical)
+S3method(percent2,default)
+S3method(percent2,logical)
 S3method(By,default)
 S3method(By,data.frame)
 S3method(print,bucket)
@@ -163,112 +111,3 @@ S3method(as.data.frame,textfile_bucket)
 S3method(as.matrix,textfile_bucket)
 S3method("[",bucket)
 # S3method(groupwise,default)
-
-exportClasses(
-  atomic,
-#   "atomic or NULL",
-#   "atomic or factor",
-#   "character or NULL",
-  value.labels,
-#   "value.labels or NULL",
-  value.filter,
-#   "value.filter or NULL",
-  valid.values,
-  valid.range,
-  missing.values,
-  annotation,
-  item,
-  double,
-  integer.item,
-  double.item,
-  character.item,
-  numeric.item,
-  item.vector,
-  named.list,
-  item.list,
-  data.set,
-  spss.fixed.importer,
-  spss.portable.importer,
-  spss.system.importer,
-  Stata.importer,
-  importer,
-#   index,
-#   strict.index,
-  codebook
-  )
-
-exportMethods(
-    as.item,
-    labels,
-    "labels<-",
-    value.filter,
-    valid.values,
-    missing.values,
-    valid.range,
-    "valid.values<-",
-    "valid.range<-",
-    "missing.values<-",
-    measurement,
-    "measurement<-",
-    annotation,
-    "annotation<-",
-    Arith,
-    Compare,
-    Math,
-    Math2,
-    Summary,
-    format,
-    print,
-    show,
-    unique,
-    "[",
-    "[<-",
-    "rep",
-#     "$",
-    row.names,
-    dimnames,
-    as.array,
-    as.vector,
-    as.character,
-    as.numeric,
-    as.integer,
-    as.factor,
-    as.ordered,
-    contrasts,
-    "contrasts<-",
-    summary,
-    within,
-    "%in%",
-    recode,
-    dim,
-    subset,
-#     as.data.frame,
-    initialize,
-    coerce,
-    Table,
-    Descriptives,
-    codebook,
-    #seekData,
-    #readData,
-    sample,
-    query
-    )
-S3method(as.data.frame,character.item)
-S3method(as.data.frame,double.item)
-S3method(as.data.frame,integer.item)
-#S3method(dim,data.set)
-#S3method("[",data.set)
-#S3method("[<-",data.set)
-# S3method("[[",data.set)
-S3method("[[<-",data.set)
-S3method(str,data.set)
-# S3method(subset,data.set)
-#S3method(within,data.set)
-S3method(str,integer.item)
-S3method(str,double.item)
-S3method(str,character.item)
-S3method(as.list,data.set)
-S3method(as.data.frame,data.set)
-S3method(cbind,data.set)
-S3method(fapply,data.set)
-S3method(print,descriptions)

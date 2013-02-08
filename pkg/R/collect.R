@@ -214,7 +214,6 @@ collOne <- function(vecs,source,nrow.items,varname,fussy=FALSE,warn=TRUE){
   lens <- sapply(vecs,length)
   has.els <- lens > 0
   checkAttribs(vecs[which(has.els)],varname=varname,fussy=fussy)
-#   browser()
   first.nonempty <- which(has.els)[1]
   res <- lapply(seq_along(nrow.items),
                   function(i)
@@ -247,8 +246,6 @@ namedlists.pairwise.identical <- function(x){
   res
 }
 
-ord.union <- function(x,y) .Call("ord_union",x,y)
-
 fill_dimnames <- function(x){
   d <- length(dim(x))
   dd <- dim(x)
@@ -267,7 +264,7 @@ fill_dimnames <- function(x){
 }
 
 clct.arrays <- function(x){
-  dims <- Sapply(x,dim)
+  dims <- sapply(x,dim)
   n.x <- length(x)
   if(is.list(dims)) stop("Dimensions do not match")
   x <- lapply(x,fill_dimnames)
@@ -281,7 +278,6 @@ clct.arrays <- function(x){
   cdims <- sapply(cdimnames,length)
   cdims <- c(cdims,n.x)
   res <- array(NA,dim=cdims,dimnames=c(cdimnames,list(NULL)))
-#   str(res)
   for(j in 1:n.x){
     rhs <- list(as.symbol("["),as.call(list(as.symbol("[["),as.symbol("x"),j)))
     rhs <- as.call(rhs)

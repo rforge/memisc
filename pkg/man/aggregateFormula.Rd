@@ -18,15 +18,15 @@
   }
 \usage{
 \method{aggregate}{formula}(x, data=parent.frame(), subset=NULL,
-      sort = TRUE, names=NULL, addFreq=TRUE, as.vars=1,
-      drop.constants=TRUE,\dots)
+      sort = TRUE, labels=NULL, addFreq=TRUE, as.vars=NA,
+      drop.constants=TRUE, dot=NULL, \dots)
 
 genTable(formula, data=parent.frame(), subset=NULL,
-      names=NULL, addFreq=TRUE,\dots)
+      labels=NULL, addFreq=TRUE, dot=NULL, \dots)
 
 fapply(formula,data,\dots) # calls UseMethod("fapply",data)
 \method{fapply}{default}(formula, data, subset=NULL,
-      names=NULL, addFreq=TRUE,\dots)
+      addFreq=TRUE,\dots)
 }
 \arguments{
   \item{x, formula}{a formula. The right hand side includes one or more
@@ -44,14 +44,14 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
     the order of resulting data frame corresponds to the order in which
     the values of the grouping variables appear in the original data
     frame. }
-  \item{names}{an optional character vector giving names to the
+  \item{labels}{an optional character vector giving names to the
     result(s) yielded by the expression on the left hand side of \code{formula}.
     This argument may be redundant if the left hand side results in is a named vector.
     (See the example below.)}
   \item{addFreq}{a logical value. If TRUE and
       \code{data} is a table or a data frame with a variable
       named "Freq", a call to
-      \code{table}, \code{\link{Table}}, \code{\link{percent}}, or \code{\link{nvalid}}
+      \code{table}, \code{\link{Table}}, or \code{\link{percent}}
       is supplied by an additional argument \code{Freq}
       and a call to \code{table} is translated into
       a call to \code{Table}.
@@ -62,6 +62,9 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
     in case of arrays.}
   \item{drop.constants}{logical; variables that are constant across levels dropped from the
     result?}
+  \item{dot}{an optional character vector. If the left-hand side of the formula
+    contains a dot, then it is expanded by the variable names
+    given by this argument.}
   \item{\dots}{further arguments, passed to methods or ignored.}
 }
 \details{
@@ -104,7 +107,11 @@ ex.data <- within(ex.data,
 
 aggregate(~mu+sigma,data=ex.data)
 aggregate(mean(x)~mu+sigma,data=ex.data)
-aggregate(mean(x)~mu+sigma,data=ex.data,name="Average")
+
+aggregate(mean(.)~mu+sigma,data=within(ex.data,
+                  x.cent <- x - ave(x,mu,sigma)))
+
+aggregate(mean(x)~mu+sigma,data=ex.data,labels="Average")
 aggregate(c(mean(x),sd(x))~mu+sigma,data=ex.data)
 aggregate(c(Mean=mean(x),StDev=sd(x),N=length(x))~mu+sigma,data=ex.data)
 genTable(c(Mean=mean(x),StDev=sd(x),N=length(x))~mu+sigma,data=ex.data)

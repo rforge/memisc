@@ -1,191 +1,3 @@
-str.has <- function(text,has,not=NULL,how=c("all","any")){
-    how <- match.fun(match.arg(how))
-
-    hasit <- sapply(has,function(pat)regexpr(pat,text,fixed=TRUE) > 0)
-    if(is.matrix(hasit))
-        hasit <- apply(hasit,1,how)
-    else
-        hasit <- all(hasit)
-
-
-    if(!length(not)) return(hasit)
-    # else
-    hasnot <- sapply(not,function(pat)regexpr(pat,text,fixed=TRUE) > 0)
-    if(is.matrix(hasnot))
-        hasnot <- apply(hasnot,1,how)
-    else
-        hasnot <- all(hasnot)
-
-    hasit & !hasnot
-}
-
-
-
-setCoefTemplate <- function(...){
-  args <- list(...)
-  argnames <- names(args)
-  CoefTemplates <- get("CoefTemplates", envir=.memiscEnv)
-  OldCoefTemplates <- CoefTemplates
-    for(coef.style in argnames){
-      CoefTemplates[[coef.style]] <- args[[coef.style]]
-  }
-  assign("CoefTemplates",CoefTemplates, envir=.memiscEnv)
-  return(invisible(OldCoefTemplates))
-}
-
-getFirstMatch <- function(x,n){
-  for(n. in n){
-    if(n. %in% names(x)) return(x[[n.]])
-  }
-  return(x[["default"]])
-}
-
-getCoefTemplate <- function(style){
-  CoefTemplates <- get("CoefTemplates", envir=.memiscEnv)
-  if(missing(style)) return(CoefTemplates)
-  else return(CoefTemplates[[style]])
-}
-
-
-getSummary <- function(obj,alpha=.05,...) UseMethod("getSummary")
-# setGeneric("getSummary")
-
-
-getSummary.lm <- function(obj,
-            alpha=.05,
-            ...
-            ){
-  smry <- summary(obj)
-  coef <- smry$coef
-
-  numdf <- unname(smry$fstatistic[2])
-  dendf <- unname(smry$fstatistic[3])
-
-  lower <- coef[,1] + coef[,2]*qt(p=alpha/2,df=dendf)
-  upper <- coef[,1] + coef[,2]*qt(p=1-alpha/2,df=dendf)
-
-  coef <- cbind(coef,lower,upper)
-
-  colnames(coef) <- c("est","se","stat","p","lwr","upr")
-  sigma <- smry$sigma
-  r.squared <- smry$r.squared
-  adj.r.squared <- smry$adj.r.squared
-  F <- unname(smry$fstatistic[1])
-  p <- pf(F,numdf,dendf,lower.tail=FALSE)
-  N <- sum(smry$df[1:2])
-  ll <- logLik(obj)
-  deviance <- deviance(obj)
-  AIC <- AIC(obj)
-  BIC <- AIC(obj,k=log(N))
-  sumstat <- c(
-          sigma         = sigma,
-          r.squared     = r.squared,
-          adj.r.squared = adj.r.squared,
-          F             = F,
-          numdf         = numdf,
-          dendf         = dendf,
-          p             = p,
-          logLik        = ll,
-          deviance      = deviance,
-          AIC           = AIC,
-          BIC           = BIC,
-          N             = N
-          )
-
-  #coef <- apply(coef,1,applyTemplate,template=coef.template)
-
-  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=obj$xlevels,call=obj$call)
-}
-
-
-getSummary.glm <- function(obj,
-            alpha=.05,
-            ...){
-
-  smry <- summary(obj)
-  N <- if(length(weights(obj))) sum(weights(obj))
-    else sum(smry$df[1:2])
-
-  coef <- smry$coef
-
-  lower <- qnorm(p=alpha/2,mean=coef[,1],sd=coef[,2])
-  upper <- qnorm(p=1-alpha/2,mean=coef[,1],sd=coef[,2])
-
-  coef <- cbind(coef,lower,upper)
-
-  colnames(coef) <- c("est","se","stat","p","lwr","upr")
-  phi <- smry$dispersion
-  LR <- smry$null.deviance - smry$deviance
-  df <- smry$df.null - smry$df.residual
-
-  ll <- logLik(obj)
-  deviance <- deviance(obj)
-
-
-  if(df > 0){
-    p <- pchisq(LR,df,lower.tail=FALSE)
-    L0.pwr <- exp(-smry$null.deviance/N)
-    #LM.pwr <- exp(-smry$deviance/N)
-
-    Aldrich.Nelson <- LR/(LR+N)
-    McFadden <- 1- smry$deviance/smry$null.deviance
-    Cox.Snell <- 1 - exp(-LR/N)
-    Nagelkerke <- Cox.Snell/(1-L0.pwr)
-    }
-  else {
-    LR <- NA
-    df <- NA
-    p <- NA
-    Aldrich.Nelson <- NA
-    McFadden <- NA
-    Cox.Snell <- NA
-    Nagelkerke <- NA
-    }
-
-  AIC <- AIC(obj)
-  BIC <- AIC(obj,k=log(N))
-  sumstat <- c(
-          phi         = phi,
-          LR             = LR,
-          df         = df,
-          p             = p,
-          logLik        = ll,
-          deviance      = deviance,
-          Aldrich.Nelson = Aldrich.Nelson,
-          McFadden      = McFadden,
-          Cox.Snell       = Cox.Snell,
-          Nagelkerke    = Nagelkerke,
-          AIC           = AIC,
-          BIC           = BIC,
-          N             = N
-          )
-
-  #coef <- apply(coef,1,applyTemplate,template=coef.template)
-
-  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=obj$xlevels,call=obj$call)
-}
-
-getSummaryTemplate <- function(x){
-  SummaryTemplates <- get("SummaryTemplates", envir=.memiscEnv)
-  if(missing(x)) return(SummaryTemplates)
-  if(is.character(x)) cls <- x
-  else cls <- class(x)
-  return(getFirstMatch(SummaryTemplates,cls))
-}
-
-setSummaryTemplate <- function(...){
-  args <- list(...)
-  argnames <- names(args)
-  OldSummaryTemplates <- SummaryTemplates <- get("SummaryTemplates", envir=.memiscEnv)
-  for(cls in argnames){
-      SummaryTemplates[[cls]] <- args[[cls]]
-  }
-  assign("SummaryTemplates",SummaryTemplates,envir=.memiscEnv)
-  return(invisible(OldSummaryTemplates))
-}
-
 prettyNames <- function(coefnames,
                         contrasts,
                         xlevels,
@@ -252,54 +64,6 @@ prettyNames1 <- function(str,
         ){
          baselevel <- setdiff(rownames(contrast.matrix),colnames(contrast.matrix))
          newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
-         oldlabels <- colnames(contrast.matrix)
-      }
-      else {
-        oldlabels <- newlabels <- colnames(contrast.matrix)
-      }
-      from <- paste(f,oldlabels,sep="")
-      to <- sapply(newlabels,
-        function(l)applyTemplate(c(f=f,l=l),template=factor.style))
-      for(i in 1:length(from))
-        str <- gsub(from[i],to[i],str,fixed=TRUE)
-   }
-   str
-}
-
-
-prettyNames.old <- function(str,
-                        contrasts,
-                        xlevels,
-                        factor.style=getOption("factor.style"),
-                        baselevel.sep=getOption("baselevel.sep")
-                        ){
-   str <- gsub(":"," x ",str,fixed=TRUE)
-   for(f in names(contrasts)){
-      contrast.f <- contrasts[[f]]
-      levels <- xlevels[[f]]
-      if(is.character(contrast.f))
-        contrast.matrix <- do.call(contrast.f,list(n=levels))
-      if(is.matrix(contrast.f))
-        contrast.matrix <- contrast.f
-      if(!length(colnames(contrast.matrix))){
-        oldlabels <- newlabels <- as.character(1:ncol(contrast.matrix))
-        }
-      else if(is.character(contrast.f) &&
-          contrast.f %in% c(
-              "contr.treatment",
-              "contr.SAS"
-              )){
-         baselevel <- setdiff(rownames(contrast.matrix),colnames(contrast.matrix))
-         newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
-         oldlabels <- colnames(contrast.matrix)
-      }
-      else if(is.character(contrast.f) &&
-          contrast.f %in% c(
-              "contr.sum",
-              "contr.helmert"
-              )){
-         newlabels <- apply(contrast.matrix,2,
-                                          function(x)rownames(contrast.matrix)[x>=1])
          oldlabels <- colnames(contrast.matrix)
       }
       else {
@@ -570,9 +334,34 @@ format.mtable <- function(x,
           bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
           interaction.sep = if(forLaTeX) " $\\times$ " else " x ",
           center.summaries=FALSE,
+          drop=TRUE,
+          shrink=FALSE,
           ...
           ){
+
   if(forLaTeX) compact <- FALSE
+
+  if(drop && forLaTeX){
+    can.drop <- which(dim(x$coefficients) == 1)
+    l <- length(dim(x$coefficients))
+    can.drop <- setdiff(can.drop,c(l-1,l))
+    if(length(can.drop)){
+      if(can.drop %in% x$as.row){
+        x$kill.col <- x$kill.col[x$kill.col != which(can.drop == x$as.row)]
+      }
+      if(can.drop %in% x$as.col){
+        x$kill.header <- x$kill.header[x$kill.header != which(can.drop == x$as.col)]
+      }
+      for(i in c("as.row","as.col","coef.dim")){
+        x[[i]] <- x[[i]][x[[i]]!=can.drop]
+        x[[i]][x[[i]] > can.drop] <- x[[i]][x[[i]] > can.drop] - 1
+        }
+    dn <- dimnames(x$coefficients)
+    dm <- dim(x$coefficients)
+    dim(x$coefficients) <- dm[-can.drop]
+    dimnames(x$coefficients) <- dn[-can.drop]
+    }
+  }
 
   coldims <- dim(x$coefficients)[x$as.col]
   nhrows <- length(coldims)
@@ -581,13 +370,15 @@ format.mtable <- function(x,
   if(interaction.sep !=" x ")
     coefnames <- gsub(" x ",interaction.sep,coefnames,fixed=TRUE)
   dimnames(x$coefficients)[[x$coef.dim]] <- coefnames
+
   coefs <- ftable(as.table(x$coefficients),row.vars=rev(x$as.row),
     col.vars=rev(x$as.col)
     )
   infos <- attributes(coefs)
   summaries <- x$summaries
+
   if(compact){
-    ans <- trimws(coefs)
+   ans <- trimws(coefs)
     col.vars <- rev(infos$col.vars)
     ans <- coefs
     for(i in 1:length(col.vars)){
@@ -625,11 +416,12 @@ format.mtable <- function(x,
         leaders <- as.matrix(paste(leaders,tmp,colsep,sep=""))
     }
     ans <- paste(leaders,ans,sep=colsep)
-    ans <- ans[-x$kill.header]
+    if(x$kill.header %in% 1:length(col.vars))
+      ans <- ans[-x$kill.header]
     ans <- paste(ans,rowsep,sep="")
     return(ans)
   }
-  else if(!forLaTeX){
+  else if(!forLaTeX){ ## and also !compact
     if(length(center.at)){
       align.integers <- match.arg(align.integers)
       coefs <- apply(coefs,2,centerAt,
@@ -722,6 +514,9 @@ format.mtable <- function(x,
     if(missing(trimleft)) trimleft <- FALSE
     if(missing(trimright)) trimright <- FALSE
     if(missing(center.at)) center.at <- getOption("OutDec")
+    if(shrink) colspec <- paste("@{}",colspec,sep="")
+    ncoef <- ncol(coefs)
+
     align.integers <- match.arg(align.integers)
     col.vars <- rev(infos$col.vars)
     row.vars <- infos$row.vars[-x$kill.col]
@@ -736,6 +531,26 @@ format.mtable <- function(x,
       attributes(coefs) <-tmpatt
       }
 
+    #coefs <- sub("(\\*+)","^{\\1}",coefs)
+
+    for(symb in c(names(getOption("signif.symbols")))){
+#         for(to.esc in c(".","*","+")){
+#             #symb <- gsub(to.esc,paste("[",to.esc,"]",sep=""),symb,fixed=TRUE)
+#             symb <- gsub(to.esc,paste("\\",to.esc,sep=""),symb,fixed=TRUE)
+#             }
+#         pat <- paste("(\\d)(",symb,")(\\s)",sep="")
+#         cat("pat=",pat,"\n")
+        pat <- symb
+        subst <- paste("^{",symb,"}",sep="")
+        coefs <- gsub(pat,subst,coefs,fixed=TRUE)
+        #coefs <- gsub(pat,"\\1^{\\2}\\3",coefs)
+    }
+    coefs <- gsub("}}}","}",coefs,fixed=TRUE)
+    coefs <- gsub("}}","}",coefs,fixed=TRUE)
+    coefs <- gsub("}^{","",coefs,fixed=TRUE)
+    coefs <- gsub("{^","",coefs,fixed=TRUE)
+    
+    coefs <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",coefs)
     if(length(summaries)){
       if(nrow(summaries)>1)
           summaries <- apply(summaries,2,centerAt,
@@ -766,15 +581,14 @@ format.mtable <- function(x,
       tmp.header[] <- cv
       mcols <- ncol(coefs)/length(tmp.header)
       tmp.header <- paste("\\multicolumn{",mcols,"}{c}{",trimws(tmp.header),"}",sep="")
-      if(i == length(col.vars) && length(col.vars) > 1)
-        tmp.header <- paste(tmp.header,collapse=" && ")
+      dim(tmp.header) <- c(lcv,length(tmp.header)/lcv)
+      if(ncol(tmp.header)>1)
+        tmp.header <- apply(tmp.header,2,paste,collapse=" & ")
+      if(length(col.vars) > 1)
+        tmp.header <- paste(c("",tmp.header),collapse=" && ")
       else
-        tmp.header <- paste(tmp.header,collapse=" & ")
-      if(length(col.vars)>1)
-        tmp.header <- c(rep("",length(row.vars)+1),t(tmp.header))
-      else
-        tmp.header <- c(rep("",length(row.vars)),t(tmp.header))
-      tmp.header <- paste(tmp.header,collapse="&")
+        tmp.header <- paste(c("",tmp.header),collapse=" & ")
+        
       header[i] <- tmp.header
 
       ans <- format(ans,justify="centre")
@@ -940,319 +754,3 @@ relabel.mtable <- function(x,...,gsub=FALSE,fixed=!gsub,warn=FALSE){
  return(x)
 }
 
-## The following three functions are contributed by
-## Christopher N. Lawrence, Ph.D. <c.n.lawrence@gmail.com>
-## Assistant Professor of Political Science
-## Texas A&M International University
-## 313 LBVSC, 5201 University Blvd
-## Laredo, Texas 78041-1920
-
-getSummary.polr <- function(obj,
-            alpha=.05,
-            ...){
-
-  smry <- summary(obj)
-  N <- if(length(weights(obj))) sum(weights(obj))
-    else smry$nobs
-
-  coef <- smry$coef
-
-  if (smry$df.residual) {
-      pvals <- 2*pt(-abs(coef[,3]), smry$df.residual)
-  } else {
-      pvals <- 2*pnorm(-abs(coef[,3]))
-  }
-
-  lower <- qnorm(p=alpha/2,mean=coef[,1],sd=coef[,2])
-  upper <- qnorm(p=1-alpha/2,mean=coef[,1],sd=coef[,2])
-
-  coef <- cbind(coef,pvals,lower,upper)
-
-  colnames(coef) <- c("est","se","stat","p","lwr","upr")
-  null.model <- update(obj, paste(names(obj$model[1]), " ~ 1"))
-
-  LR <- deviance(null.model) - deviance(obj)
-  df <- null.model$df.residual - smry$df.resid
-
-  ll <- logLik(obj)
-  dev <- deviance(obj)
-
-  if(df > 0){
-    p <- pchisq(LR,df,lower.tail=FALSE)
-    L0.pwr <- exp(-deviance(null.model)/N)
-    #LM.pwr <- exp(-smry$deviance/N)
-
-    Aldrich.Nelson <- LR/(LR+N)
-    McFadden <- 1 - dev/deviance(null.model)
-    Cox.Snell <- 1 - exp(-LR/N)
-    Nagelkerke <- Cox.Snell/(1-L0.pwr)
-    }
-  else {
-    LR <- NA
-    df <- NA
-    p <- NA
-    Aldrich.Nelson <- NA
-    McFadden <- NA
-    Cox.Snell <- NA
-    Nagelkerke <- NA
-    }
-
-  AIC <- AIC(obj)
-  BIC <- AIC(obj,k=log(N))
-  sumstat <- c(
-          LR             = LR,
-          df         = df,
-          p             = p,
-          logLik        = ll,
-          deviance      = dev,
-          Aldrich.Nelson = Aldrich.Nelson,
-          McFadden      = McFadden,
-          Cox.Snell       = Cox.Snell,
-          Nagelkerke    = Nagelkerke,
-          AIC           = AIC,
-          BIC           = BIC,
-          N             = N
-          )
-
-  #coef <- apply(coef,1,applyTemplate,template=coef.template)
-
-  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=smry$xlevels,call=obj$call)
-}
-
-getSummary.clm <- function(obj,
-            alpha=.05,
-            ...){
-
-  smry <- summary(obj)
-  N <- if(length(weights(obj))) sum(weights(obj))
-    else smry$nobs
-
-  cf <- coef(smry)
-
-  ## Move threshold parameters to end
-  thresholds <- names(obj$xi)
-  parameters <- rownames(cf)
-  cf <- rbind(cf[setdiff(parameters, thresholds),], cf[thresholds,])
-  
-  lower <- qnorm(p=alpha/2,mean=cf[,1],sd=cf[,2])
-  upper <- qnorm(p=1-alpha/2,mean=cf[,1],sd=cf[,2])
-
-  cf <- cbind(cf,lower,upper)
-
-  colnames(cf) <- c("est","se","stat","p","lwr","upr")
-  null.model <- update(obj, location=paste(names(obj$model[1]), " ~ 1"))
-
-  ll <- logLik(obj)
-  ll0 <- logLik(null.model)
-
-  LR <- 2*(ll-ll0)
-  df <- null.model$df.residual - smry$df.residual
-
-  dev <- -2*ll
-
-  if(df > 0){
-    p <- pchisq(LR,df,lower.tail=FALSE)
-    L0.pwr <- exp(2*ll0/N)
-    #LM.pwr <- exp(-smry$deviance/N)
-
-    Aldrich.Nelson <- LR/(LR+N)
-    McFadden <- 1 - dev/(-2*ll0)
-    Cox.Snell <- 1 - exp(-LR/N)
-    Nagelkerke <- Cox.Snell/(1-L0.pwr)
-    }
-  else {
-    LR <- NA
-    df <- NA
-    p <- NA
-    Aldrich.Nelson <- NA
-    McFadden <- NA
-    Cox.Snell <- NA
-    Nagelkerke <- NA
-    }
-
-  AIC <- AIC(obj)
-  BIC <- AIC(obj,k=log(N))
-  sumstat <- c(
-          LR             = LR,
-          df         = df,
-          p             = p,
-          logLik        = ll,
-          deviance      = dev,
-          Aldrich.Nelson = Aldrich.Nelson,
-          McFadden      = McFadden,
-          Cox.Snell       = Cox.Snell,
-          Nagelkerke    = Nagelkerke,
-          AIC           = AIC,
-          BIC           = BIC,
-          N             = N
-          )
-
-  #cf <- apply(cf,1,applyTemplate,template=coef.template)
-
-  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=cf,sumstat=sumstat,contrasts=obj$contrasts,xlevels=smry$xlevels,call=obj$call)
-}
-
-getSummary.simex <- function(obj,
-            alpha=.05,
-            ...){
-
-  smry <- summary(obj)
-  modsmry <- summary(obj$model)
-  N <- if(length(weights(obj$model))) sum(weights(obj$model))
-    else {
-        if(length(modsmry$df) > 1) sum(modsmry$df[1:2])
-        else obj$model$nobs
-    }
-
-  ## Asymptotics not guaranteed to be here.
-  coef <- smry$coef$jackknife
-
-  lower <- qnorm(p=alpha/2,mean=coef[,1],sd=coef[,2])
-  upper <- qnorm(p=1-alpha/2,mean=coef[,1],sd=coef[,2])
-
-  coef <- cbind(coef,lower,upper)
-
-  colnames(coef) <- c("est","se","stat","p","lwr","upr")
-  sumstat <- c(N=N,
-               LR=NA,
-               df=NA,
-               p=NA,
-               Aldrich.Nelson=NA,
-               McFadden=NA,
-               Cox.Snell=NA,
-               Nagelkerke=NA,
-               logLik=NA,
-               deviance=NA,
-               AIC=NA,
-               BIC=NA)
-
-  #coef <- apply(coef,1,applyTemplate,template=coef.template)
-
-  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=smry$xlevels,call=obj$call)
-}
-
-## The following two functions are contributed by
-## Dave Atkins, PhD
-## Research Associate Professor
-## Center for the Study of Health and Risk Behaviors
-## Department of  Psychiatry and Behavioral Science
-## Unversity of Washington
-
-getSummary.expcoef <- function(obj, alpha = 0.05, ...) UseMethod("getSummary.expcoef")
-
-getSummary.expcoef.glm <- function (obj, alpha = 0.05, ...)
-{
-    smry <- summary(obj)
-    N <- if (length(weights(obj)))
-        sum(weights(obj))
-    else sum(smry$df[1:2])
-    coef <- cbind(exp(smry$coef[,1]), smry$coef[,2:4]) # NOTE: exponentiated coefficients
-    lower <- exp(qnorm(p = alpha/2, mean = smry$coef[, 1], sd = coef[,
-        2]))
-    upper <- exp(qnorm(p = 1 - alpha/2, mean = smry$coef[, 1], sd = coef[,
-        2]))
-    # NOTE: exponentiated CI
-    coef <- cbind(coef, lower, upper)
-    colnames(coef) <- c("est", "se", "stat", "p", "lwr", "upr")
-    phi <- smry$dispersion
-    LR <- smry$null.deviance - smry$deviance
-    df <- smry$df.null - smry$df.residual
-    ll <- logLik(obj)
-    deviance <- deviance(obj)
-    if (df > 0) {
-        p <- pchisq(LR, df, lower.tail = FALSE)
-        L0.pwr <- exp(-smry$null.deviance/N)
-        Aldrich.Nelson <- LR/(LR+N)
-        McFadden <- 1 - smry$deviance/smry$null.deviance
-        Cox.Snell <- 1 - exp(-LR/N)
-        Nagelkerke <- Cox.Snell/(1 - L0.pwr)
-    }
-    else {
-        LR <- NA
-        df <- NA
-        p <- NA
-        Aldrich.Nelson <- NA
-        McFadden <- NA
-        Cox.Snell <- NA
-        Nagelkerke <- NA
-    }
-    AIC <- AIC(obj)
-    BIC <- AIC(obj, k = log(N))
-    sumstat <- c(phi = phi, LR = LR, df = df, p = p, logLik = ll,
-        deviance = deviance, McFadden = McFadden, Cox.Snell = Cox.Snell,
-        Aldrich.Nelson = Aldrich.Nelson,
-        Nagelkerke = Nagelkerke, AIC = AIC, BIC = BIC, N = N)
-    list(coef = coef, sumstat = sumstat, contrasts = obj$contrasts,
-        xlevels = obj$xlevels, call = obj$call)
-}
-
-getSummary.lmer <- function (obj, alpha = 0.05, ...)
-{
-    smry <- summary(obj)
-    #N <- if (length(weights(obj))) ### NOTE: how to deal with groups/samp size?
-    #    sum(weights(obj))
-    #else sum(smry$df[1:2])
-    coef <- smry@coefs
-    lower <- qnorm(p = alpha/2, mean = coef[, 1], sd = coef[,
-        2])
-    upper <- qnorm(p = 1 - alpha/2, mean = coef[, 1], sd = coef[,
-        2])
-    if (ncol(smry@coefs) == 3) {
-      ## BUGFIX: should be abs(.) here
-      p <- (1 - pnorm(abs(smry@coefs[,3])))*2 # NOTE: no p-values for lmer() due to
-                          # unclear dfs; calculate p-values based on z
-      coef <- cbind(coef, p, lower, upper)
-    } else {
-        coef <- cbind(coef, lower, upper) # glmer will have 4 columns with p-values
-        }
-    colnames(coef) <- c("est", "se", "stat", "p", "lwr", "upr")
-    #phi <- smry$dispersion
-    #LR <- smry$null.deviance - smry$deviance
-    #df <- smry$df.null - smry$df.residual
-    ll <- smry@logLik[1]
-    deviance <- smry@deviance[['ML']]
-    #if (df > 0) {
-    #    p <- pchisq(LR, df, lower.tail = FALSE)
-    #    L0.pwr <- exp(-smry$null.deviance/N)
-    #    McFadden <- 1 - smry$deviance/smry$null.deviance
-    #    Cox.Snell <- 1 - exp(-LR/N)
-    #    Nagelkerke <- Cox.Snell/(1 - L0.pwr)
-    #}
-    #else {
-    #    LR <- NA
-    #    df <- NA
-    #    p <- NA
-    #    McFadden <- NA
-    #    Cox.Snell <- NA
-    #    Nagelkerke <- NA
-    #}
-    AIC <- smry@AICtab[1][,1] # NOTE: these are both data.frames? not sure why...
-    BIC <- smry@AICtab[2][,1]
-    ### NOTE: don't see a similar slot for "xlevels" to get levels of
-    ###   factor variables used as predictors; for time being, force
-    ###   user to specify explicitly
-    #if (fac != NULL) {
-    #   n <- length(fac)
-    # xlevels <- vector(n, mode = "list")
-    # for (i in 1:n) {
-    #   xlevels[i] <- levels(obj@frame[,fac[i]])
-    #   }
-    # }
-    #sumstat <- c(phi = phi, LR = LR, df = df, p = p, logLik = ll,
-    #    deviance = deviance, McFadden = McFadden, Cox.Snell = Cox.Snell,
-    #    Nagelkerke = Nagelkerke, AIC = AIC, BIC = BIC, N = N)
-    sumstat <- c(logLik = ll, deviance = deviance, AIC = AIC, BIC = BIC,
-                 N = obj@dims[['n']], phi=NA, LR=NA, df=NA, p=NA, McFadden=NA,
-                 Cox.Snell=NA, Nagelkerke=NA, Aldrich.Nelson=NA)
-    list(coef = coef, sumstat = sumstat,
-       contrasts = attr(obj@X, "contrasts"),
-        xlevels = NULL, call = obj@call)
-}
-
-## lmer objects renamed to mer since 0.999375-16
-getSummary.mer <- getSummary.lmer
-
-## if(require('lme4')) setMethod("getSummary", "mer", getSummary.mer)

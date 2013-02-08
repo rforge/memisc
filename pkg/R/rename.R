@@ -21,10 +21,9 @@ rename <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE){
   return(x)
 }
 
-relabel <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE){
-  if(isS4(x)) relabel4(x,...,gsub=gsub,fixed=fixed,warn=warn)
-  else UseMethod("relabel")
-}
+relabel <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE)
+   UseMethod("relabel")
+
 
 relabel.default <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE){
   if(!is.null(attr(x,"labels"))) labels <- attr(x,"labels")
@@ -52,7 +51,7 @@ relabel.default <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE){
 }
 
 relabel.factor <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE){
-  subst <- c(...)  
+  subst <- c(...)
 #   for(i in 1:length(subst)){
 #     levels(x)[levels(x)==names(subst[i])] <- subst[i]
 #   }

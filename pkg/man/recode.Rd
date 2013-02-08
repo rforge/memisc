@@ -12,7 +12,6 @@
 \usage{
   \S4method{recode}{vector}(x,...,otherwise="NA")
   \S4method{recode}{factor}(x,...,otherwise="NA")
-  \S4method{recode}{item}(x,...,otherwise="NA")
 }
 \arguments{
   \item{x}{An object}
@@ -49,7 +48,7 @@
 }
 
 \value{
-  A numerical vector, factor or an \code{item} object.
+  A numerical vector or factor.
 }
 
 \details{
@@ -71,14 +70,7 @@ with the syntax of the \code{\link[car]{recode}} function of that package.
 }
 
 \examples{
-x <- as.item(sample(1:6,20,replace=TRUE),
-        labels=c( a=1,
-                  b=2,
-                  c=3,
-                  d=4,
-                  e=5,
-                  f=6))
-print(x)
+x <- sample(1:6,20,replace=TRUE)
 
 # A recoded version of x is returned
 # containing the values 1, 2, 3, which are
@@ -110,8 +102,7 @@ recode(x,
   E = 5 <- 8
   )
 
-f <- as.factor(x)
-x <- as.integer(x)
+f <- factor(x,labels=letters[1:6])
 
 recode(x,
   1 <- range(min,2),

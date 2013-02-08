@@ -1,7 +1,5 @@
 \name{sample-methods}
 \alias{sample,data.frame-method}
-\alias{sample,data.set-method}
-\alias{sample,importer-method}
 \title{Take a Sample from a Data Frame-like Object}
 \description{
   The methods below are convenience short-cuts to
@@ -12,11 +10,9 @@
 }
 \usage{
 \S4method{sample}{data.frame}(x, size, replace = FALSE, prob = NULL)
-\S4method{sample}{data.set}(x, size, replace = FALSE, prob = NULL)
-\S4method{sample}{importer}(x, size, replace = FALSE, prob = NULL)
 }
 \arguments{
-  \item{x}{a data frame or data set.}
+  \item{x}{a data frame.}
   \item{size}{an (optional) numerical value, the sample size,
     defaults to the total number of rows of \code{x}.}
   \item{replace}{a logical value, determines whether

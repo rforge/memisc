@@ -8,18 +8,6 @@ default_bucket <- function(size=1){
   })
   structure(bucket,class=c("default_bucket","bucket"))
 }
-# default.bucket <- function(size=NA){
-#   init <- TRUE
-#   i <- 1
-#   e <- environment()
-#   res <- function(){
-#     print(init)
-#     if(init) with(e,init <- FALSE)
-#     with(e,i <- i+1)
-#   }
-#   structure(res,class="bucket")
-# }
-
 
 put_into <- function(bucket,value) UseMethod("put_into")
 put_into.default_bucket <- function(bucket,value){

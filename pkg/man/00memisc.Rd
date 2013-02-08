@@ -17,69 +17,6 @@ The tools in this package can be grouped into five major categories:
 }
 }
 \section{Data preparation and management}{
-\strong{Survey Items}
-
-  \code{memisc} provides facilities to work with what users from other
-  packages like SPSS, SAS, or Stata know as `variable labels', `value labels'
-  and `user-defined missing values'. In the context of this package these
-  aspects of the data are represented by the \code{"description"},
-  \code{"labels"}, and \code{"missing.values"} attributes of a
-  data vector. 
-  These facilities are useful, for example, if you work with
-  survey data that contain coded items like vote intention that
-  may have the following structure:
-
-  Question: ``If there was a parliamentary election next tuesday, which party would you vote for?''
-  \tabular{rl}{
-    1 \tab Conservative Party \cr
-    2 \tab Labour Party \cr
-    3 \tab Liberal Democrat Party \cr
-    4 \tab Scottish Nation Party \cr
-    5 \tab Plaid Cymru \cr
-    6 \tab Green Party \cr
-    7 \tab British National Party \cr
-    8 \tab Other party \cr
-    96 \tab Not allowed to vote \cr
-    97 \tab Would not vote \cr
-    98 \tab Would vote, do not know yet for which party \cr
-    99 \tab No answer 
-  }
-  A statistical package like SPSS allows to
-  attach labels like `Conservative Party', `Labour Party', etc.
-  to the codes 1,2,3, etc. and to mark
-  mark the codes 96, 97, 98, 99
-  as `missing' and thus to exclude these variables from statistical
-  analyses. \code{memisc} provides similar facilities.
-  Labels can be attached to codes by calls like \code{\link{labels}(x) <- something}
-  and expendanded by calls like \code{\link{labels}(x) <- \link{labels}(x) + something},
-  codes can be marked as `missing' by
-  calls like \code{\link{missing.values}(x) <- something} and
-  \code{\link{missing.values}(x) <- \link{missing.values}(x) + something}.
-
-  \code{memisc} defines a class called "data.set", which is similar to the class "data.frame".
-  The main difference is that it is especially geared toward containing survey item data.
-  Transformations of and within "data.set" objects retain the information about
-  value labels, missing values etc. Using \code{as.data.frame} sets the data up for
-  \emph{R}'s statistical functions, but doing this explicitely is seldom necessary.
-  See \code{\link{data.set}}.
-
-  \strong{More Convenient Import of External Data}
-
-  Survey data sets are often relative large and contain up to a few thousand variables.
-  For specific analyses one needs however only a relatively small subset of these variables.
-  Although modern computers have enough RAM to load such data sets completely into an R session,
-  this is not very efficient having to drop most of the variables after loading. Also, loading
-  such a large data set completely can be time-consuming, because R has to allocate space for
-  each of the many variables. Loading just the subset of variables really needed for an analysis
-  is more efficient and convenient - it tends to be much quicker. Thus this package provides
-  facilities to load such subsets of variables, without the need to load a complete data set.
-  Further, the loading of data from SPSS files is organized in such a way that all informations
-  about variable labels, value labels, and user-defined missing values are retained.
-  This is made possible by the definition of \code{\link{importer}} objects, for which
-  a \code{\link{subset}} method exists. \code{\link{importer}} objects contain only
-  the information about the variables in the external data set but not the data.
-  The data itself is loaded into memory when the functions \code{subset} or \code{\link{as.data.set}}
-  are used.
 
   \strong{Recoding}
   
@@ -92,16 +29,6 @@ The tools in this package can be grouped into five major categories:
   be useful for programming, in so far as it is a generalization of
   \code{\link{ifelse}}.
 
-  \strong{Code Books}
-
-  There is a function \code{\link{codebook}} which produces a code book of an
-  external data set or an internal "data.set" object. A codebook contains in a
-  conveniently formatted way concise information about every variable in a data set,
-  such as which value labels and missing values are defined and some univariate statistics.
-
-  An extended example of all these facilities is contained in the vignette "anes48",
-  and in \code{demo(anes48)}
-  
   }
 
 \section{Data Analysis}{
@@ -216,17 +143,6 @@ Use \code{example(Simulate)}, \code{demo(monte.carlo)}, \code{demo(lm.monte.carl
   that implement these tricks in a convenient way, so that programmers
   (like the author of this package) need not reinvent the weel in
   every instance of changing names of an object.
-
-\strong{Dimension-Preserving Versions of \code{lapply} and \code{sapply}}
-
-If a function that is involved in a call to 
-\code{\link[base]{sapply}} returns a result an array or a matrix, the
-dimensional information gets lost. Also, if a list object to which
-\code{\link[base]{lapply}} or \code{\link[base]{sapply}} are applied
-have a dimension attribute, the result looses this information.
-The functions \code{\link{Lapply}} and
-\code{\link{Sapply}} defined in this package preserve such
-dimensional information.
 
 \strong{Combining Vectors and Arrays by Names}
 

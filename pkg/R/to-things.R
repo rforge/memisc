@@ -61,38 +61,6 @@ to.data.frame <- function(X,as.vars=1,name="Freq"){
   cbind(Z,X)
 }
 
-# to.array <- function(x,...) UseMethod("to.array")
-# to.array.default <- function(x,...)base::as.array(x)
-
-# to.array.data.frame <- function(x,data.name=NULL,...){
-#   s <- paste(deparse(substitute(x)),collapse="")
-#   fcts <- sapply(x,is.factor)
-#   if(any(fcts)){
-#     nofcts <- !fcts
-#     fcts <- x[fcts]
-#     d <- c(sum(nofcts),sapply(fcts,nlevels))
-#     m <- nrow(x) %/% prod(d[-1])
-#     r <- nrow(x) %% prod(d[-1])
-#     if(r!=0)stop(gettextf("cannot transform '%s' into an array",s))
-#     rn <- rownames(x)
-#     x <- x[nofcts]
-#     ii <- c(list(rn),lapply(fcts,function(x)match(x,levels(x))))
-#     x <- as.matrix(x)
-#     x <- t(x)[,do.call("order",rev(ii))]
-#     dn <- c(structure(list(rownames(x)),names=data.name),lapply(fcts,levels))
-#     if(m>1){
-#       dim(x) <- c(m,d)
-#       dimnames(x) <- c(list(rn[1:m]),dn)
-#     }
-#     else {
-#       dim(x) <- d
-#       dimnames(x) <- dn
-#     }
-#     return(x)
-#   }
-#   else return(as.matrix(x))
-# }
-
 setMethod("as.array","data.frame",
   function(x,data.name=NULL,...){
     s <- paste(deparse(substitute(x)),collapse="")
@@ -122,3 +90,24 @@ setMethod("as.array","data.frame",
     }
     else return(as.matrix(x))
 })
+
+numericIfPossible <- function(x){
+    if(is.atomic(x)) return(.numericIfPossible(x))
+    else {
+        res <- lapply(x,.numericIfPossible)
+        attributes(res) <- attributes(x)
+        return(res)
+    }
+}
+
+.numericIfPossible <- function(x){
+    if(is.numeric(x)) return(x)
+    else if(is.character(x)) return(.Call("numeric_if_possible", as.character(x)))
+    else if(is.factor(x)) {
+        levels <- .Call("numeric_if_possible",levels(x))
+        if(is.numeric(levels)){
+            return(levels[as.numeric(x)])
+        } else return(x)
+    }
+    else return(x)
+}
