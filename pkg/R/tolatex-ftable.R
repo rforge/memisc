@@ -12,7 +12,10 @@ toLatex.ftable <- function(object,
           cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
           bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
           extrarowsep = NULL,
+          header.varnames=TRUE,
           oldstyle=FALSE,
+          compact=FALSE,
+          varontop,
           ...)
 {
     row.vars <- attr(object,"row.vars")
@@ -30,43 +33,122 @@ toLatex.ftable <- function(object,
           midrule,
           cmidrule,
           bottomrule,
-          extrarowsep,
           ...
           )
     else {
+
       n <- nrow(object)
       m <- ncol(object)
       n.row.vars <- length(row.vars)
       n.col.vars <- length(col.vars)
+
+      if(missing(varontop)) varontop <- (n.col.vars == 1)
+      
       d <- digits
       digits <- integer(m)
       digits[] <- d
-      #print(digits)
+      
       fo <- format
       format <- integer(m)
       format[] <- fo
-      body <- array("",dim=dim(object))
-      for(i in seq(along=digits)) {
-        #print(digits[i])
-        body[,i] <- formatC(object[,i],digits=digits[i],format=format[i])
-        }
-      body <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",body)
-      header <- vector(mode="list",2*n.col.vars)
-      header.len <- length(header)
+
+      csp <- colspec
+      colspec <- character(m)
+      colspec[] <- csp
+      
+      nms.cv <- names(col.vars)
+      l.cv <- sapply(col.vars,length)
+      cv.sizeg <- rev(cumprod(rev(l.cv)))
+      cv.repg <- m/cv.sizeg
+
+      if(compact) 
+        cv.stepg <- m/cv.repg
+      else {
+
+        width <- cv.repg[n.col.vars]*(cv.sizeg[n.col.vars]+1)
+        cv.stepg <- width/cv.repg
+        width <- width - 1
+      }
+      
+      mcols <- c(if(compact) cv.sizeg else cv.stepg-1,1)
+
+      start.g <- lapply(1:n.col.vars,function(i){
+                      seq(from=1,length=cv.repg[i],by=cv.stepg[i])
+                    })
+      end.g <- mapply(`+`,start.g,cv.stepg-2)
+      start.g.n <- start.g[[n.col.vars]]
+      end.g.n <- end.g[[n.col.vars]]
+      ii.hd <- unlist(mapply(seq,from=start.g.n,to=end.g.n,SIMPLIFY=FALSE))
+
+      if(n.col.vars==1 && varontop){
+        start.g <- mapply(`+`,start.g,n.row.vars)
+        end.g <- mapply(`+`,end.g,n.row.vars)
+      }
+      else{
+        start.g <- mapply(`+`,start.g,n.row.vars+1)
+        end.g <- mapply(`+`,end.g,n.row.vars+1)
+      }
+
+      start.g.n <- start.g[[n.col.vars]]
+      end.g.n <- end.g[[n.col.vars]]
+      ii <- unlist(mapply(seq,from=start.g.n,to=end.g.n,SIMPLIFY=FALSE))
+      header <- character()
+
       for(i in 1:n.col.vars){
 
-        cv <- col.vars[[i]]
-        nm.cv <- names(col.vars)[i]
-        rep.cv <- if(i==1)1 else nn.cv
-        cv <- rep(cv,rep.cv)
-        nm.cv <- rep(nm.cv,rep.cv)
-        nn.cv <- length(cv)
-        nn.nm.cv <- length(nm.cv)
-        ncv.m <- m/nn.nm.cv
-        cv.m <- m/nn.cv
-        header[[2*i-1]] <- paste("\\multicolumn{",ncv.m,"}{c}{",nm.cv,"}",sep="")
-        header[[2*i]] <- paste("\\multicolumn{",cv.m,"}{c}{",cv,"}",sep="")
+        if(i==1 && varontop){
+
+          tmp.header <- paste0("\\multicolumn{",mcols[1],"}{c}{",names(col.vars)[1],"}")
+          tmp.header <- paste0(tmp.header,"\\\\")
+          tmp.header <- paste0(tmp.header,"\n")
+          
+          if(length(cmidrule)){
+
+            cmr <- paste0(cmidrule,"{",start.g[[i]],"-",end.g[[i]],"}",collapse="")
+            tmp.header <- paste0(tmp.header,cmr)
+          }
+
+          if(n.col.vars>1)
+            tmp.header <- paste0("&",tmp.header)
+          
+          header <- append(header,tmp.header)
+        }
+
+        if(i==n.col.vars){
+          tmp.header <- if(compact)character(m) else character(width)
+          tmp.header[ii.hd] <- paste0("\\multicolumn{",mcols[i+1],"}{c}{",rep(col.vars[[i]],cv.repg[i]),"}")
+          tmp.header <- paste0(tmp.header,collapse="&")
+        }
+        else {
+          tmp.header <- paste0("\\multicolumn{",mcols[i+1],"}{c}{",rep(col.vars[[i]],cv.repg[i]),"}")
+          tmp.header <- paste0(tmp.header,collapse=if(compact)"&"else"&&")
+        }
+
+        if(n.col.vars>1 || !varontop)
+            tmp.header <- paste0(nms.cv[i],":&",tmp.header)
+        
+        tmp.header <- paste0(tmp.header,"\\\\")
+
+        if(length(cmidrule) && i<n.col.vars){
+
+            cmr <- paste0(cmidrule,"{",start.g[[i+1]],"-",end.g[[i+1]],"}",collapse="")
+            tmp.header <- paste0(tmp.header,"\n",cmr)
+        }
+        header <- append(header,tmp.header)
       }
+
+      ldr.amp <- paste0(rep("&",n.row.vars),collapse="")
+      header[-length(header)] <- paste0(ldr.amp,header[-length(header)])
+      header[length(header)] <- paste(paste0(names(row.vars),collapse="&"),header[length(header)],sep="&")
+
+      total.width <- max(ii)
+      
+      body <- array("",dim=c(nrow(object),total.width))
+
+      for(i in seq(along=digits)) 
+        body[,ii[i]] <- formatC(object[,i],digits=digits[i],format=format[i])
+        
+      body <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",body)
 
       leader <- matrix("",nrow=n,ncol=n.row.vars)
       for(i in 1:n.row.vars){
@@ -75,56 +157,38 @@ toLatex.ftable <- function(object,
         rep.rv <- if(i==1)1 else nn.rv
         rv <- rep(rv,rep.rv)
         nn.rv <- length(rv)
-        rv.m <- n/nn.rv
-        pos <- (1:nn.rv)*rv.m
-        pos <- pos - rv.m + 1
+        rv.n <- n/nn.rv
+        pos <- (1:nn.rv)*rv.n
+        pos <- pos - rv.n + 1
         leader[pos,i] <- rv
       }
-      lheader <- matrix("",nrow=header.len,ncol=n.row.vars)
-      lheader[header.len,] <- names(row.vars)
-      lheader <- apply(lheader,1,paste,collapse="&")
-      header <- sapply(header,paste,collapse="&")
-      header <- paste(lheader,header,sep="&")
-      header <- paste(header,"\\\\",sep="")
 
-      c.starts <- n.row.vars + 1
-      c.ends <- n.row.vars + m
-      cln <- paste(cmidrule,"{",c.starts,"-",c.ends,"}",sep="")
-      if(n.col.vars==1)
-        header[1] <- paste(header[1],"\n",cln)
-      else if(n.col.vars > 1){
-        hl2 <- header.len%/%2-1
-        ii <- 2*(1:hl2)
-        header[ii] <- paste(header[ii],"\n",cln)
-        }
-      
-      lcv <- length(col.vars[[n.col.vars]])
-      body <- apply(cbind(leader,body),1,paste,collapse="&")
+      body[,1:ncol(leader)] <- leader
+      body <- apply(body,1,paste0,collapse="&")
+
       if(!length(extrarowsep))
-        body <- paste(body,"\\\\",sep="")
+        body <- paste0(body,"\\\\")
       else {
-        rowsep <- rep("\\\\",NROW(body))
-        .extrarowsep <- rep("",NROW(body))
-        lrv <- length(row.vars[[n.row.vars]])
-        ii <- seq(NROW(body)%/%lrv)*lrv
-        if(show.titles && length(names(row.vars))) ii <- ii+1
-        .extrarowsep[ii] <- paste("[",extrarowsep,"]",sep="")
-        rowsep <- paste(rowsep,.extrarowsep,sep="")
-        body <- paste(body,rowsep,sep="")
+        rowsep <- paste0("\\\\[",extrarowsep,"]")
+        body <- paste0(body,rowsep)
       }
       ans <- c(toprule,header,midrule,body,bottomrule)
-      leader.spec <- paste(rep("l",n.row.vars),collapse="")
-      body.spec <- character(m)
-      body.spec[] <- colspec
-      body.spec <- paste(body.spec,collapse="")
-      tabspec <- paste(leader.spec,body.spec,sep="")
-      tabbegin <- paste("\\begin{tabular}{",tabspec,"}",sep="")
+      
+      tabspec <- rep("c",total.width)
+      tabspec[1:n.row.vars] <- "l"
+      if(n.col.vars>1)
+        tabspec[n.row.vars+1] <- "l"
+      tabspec[ii] <- colspec
+      tabspec <- paste(tabspec,collapse="")
+
+      tabbegin <- paste0("\\begin{tabular}{",tabspec,"}")
       tabend <- "\\end{tabular}"
       ans <- c(tabbegin,ans,tabend)
-#       browser()
+
       structure(ans,class="Latex")
     }
 }
+
 
 toLatex_oldstyle_ftable <- function(object,
           show.titles=TRUE,

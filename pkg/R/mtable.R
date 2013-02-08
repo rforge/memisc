@@ -47,7 +47,10 @@ prettyNames1 <- function(str,
               "contr.SAS"
               )){
          baselevel <- setdiff(rownames(contrast.matrix),colnames(contrast.matrix))
-         newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
+         if(length(baselevel.sep))
+            newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
+         else 
+            newlabels <- colnames(contrast.matrix)
          oldlabels <- colnames(contrast.matrix)
       }
       else if(is.character(contrast.f) &&
@@ -63,7 +66,10 @@ prettyNames1 <- function(str,
         all(colnames(contrast.matrix) %in% rownames(contrast.matrix))
         ){
          baselevel <- setdiff(rownames(contrast.matrix),colnames(contrast.matrix))
-         newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
+         if(length(baselevel.sep))
+           newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
+         else 
+           newlabels <- colnames(contrast.matrix)
          oldlabels <- colnames(contrast.matrix)
       }
       else {
@@ -102,24 +108,44 @@ bind_arrays <- function(args,along=1){
 }
 
 mtable <- function(...,
+                    list=NULL,
                     coef.style=getOption("coef.style"),
                     summary.stats=TRUE,
                     factor.style=getOption("factor.style"),
+                    baselevel.sep=getOption("baselevel.sep"),
                     getSummary=eval.parent(quote(getSummary)),
                     float.style=getOption("float.style"),
                     digits=min(3,getOption("digits")),
+                    signif.symbols=getOption("signif.symbols"),
                     drop=TRUE
                     ){
   args <- list(...)
-  if(length(args)==1 && inherits(args[[1]],"by"))
-    args <- args[[1]]
   argnames <- names(args)
-  if(!length(argnames)) {
+
+  if(length(args) && !length(argnames)) {
+
     m<-match.call(expand.dots=FALSE)
     argnames <- sapply(m$...,paste)
   }
-  n.args <- length(args)
 
+  if(length(list)){
+
+    args <- c(args,list)
+    listnames <- names(list)
+
+    if(!length(listnames)){
+
+      m<-match.call(expand.dots=FALSE)
+      if(length(m$list)==1)
+          listnames <- paste0(m$list,seq_along(list))
+      else
+          listnames <- paste0("(",seq_along(list),")")
+
+    }
+    argnames <- c(argnames,listnames)
+  }
+  
+  n.args <- length(args)
   arg.classes <- lapply(args,class)
   if(any(sapply(arg.classes,length))==0) stop("don\'t know how to handle these arguments")
   summaries <- lapply(args,getSummary)
@@ -134,10 +160,11 @@ mtable <- function(...,
         dimnames(coef)[[1]] <- prettyNames(dimnames(coef)[[1]],
                         contrasts=contrasts,
                         xlevels=xlevels,
-                        factor.style=factor.style)
+                        factor.style=factor.style,
+                        baselevel.sep)
         adims <- if(length(dim(coef))==2) 1 else c(1,3)
         ans <- apply(coef,adims,function(x)applyTemplate(x,
-            template=ctemplate,float.style=float.style,digits=digits))
+            template=ctemplate,float.style=float.style,digits=digits,signif.symbols=signif.symbols))
         if(length(dim(ctemplate))){
           newdims <- c(dim(ctemplate),dim(ans)[-1])
           newdimnames <- c(dimnames(ctemplate),dimnames(ans)[-1])
@@ -243,7 +270,7 @@ mtable <- function(...,
     stemplates <- lapply(args,getSummaryTemplate)
     sumstats <- lapply(seq(n.args),function(i){
           drop(applyTemplate(summaries[[i]]$sumstat,
-              template=stemplates[[i]],digits=digits))
+              template=stemplates[[i]],digits=digits,signif.symbols=signif.symbols))
         })
     sumstats <- clct.vectors(sumstats)
     colnames(sumstats) <- argnames
@@ -399,9 +426,9 @@ format.mtable <- function(x,
     coefnames <- gsub(" x ",interaction.sep,coefnames,fixed=TRUE)
   dimnames(x$coefficients)[[x$coef.dim]] <- coefnames
 
-  coefs <- ftable(as.table(x$coefficients),row.vars=rev(x$as.row),
+  coefs <- unclass(ftable(as.table(x$coefficients),row.vars=rev(x$as.row),
     col.vars=rev(x$as.col)
-    )
+    ))
   infos <- attributes(coefs)
   summaries <- x$summaries
 
@@ -797,3 +824,123 @@ relabel.mtable <- function(x,...,gsub=FALSE,fixed=!gsub,warn=FALSE){
  return(x)
 }
 
+combine_mtables <- function(...){
+
+   x <- list(...)
+   coefs <- lapply(x,"[[","coefficients")
+   coefs <- lapply(coefs,function(coefs){
+      mdls <- dimnames(coefs)[[4]]
+      d <- dim(coefs)[-4]
+      dn <- dimnames(coefs)[-4]
+      structure(lapply(mdls,function(m){
+        array(coefs[,,,m],
+          dim=d,
+          dimnames=dn)
+      }),names=mdls)
+    })
+
+   cnames <- unlist(lapply(coefs,names))
+   coefs <- unlist(coefs,recursive=FALSE)
+   coefs <- as.table(clct.arrays(coefs))
+   n.dims <- length(dim(coefs))
+   dimnames(coefs)[[n.dims]] <- cnames
+   coefs[is.na(coefs)] <- ""
+
+   groups <- c(lapply(x,"[[","groups"))
+   summaries <- lapply(x,"[[","summaries")
+   summaries <- lapply(summaries,function(s){
+     lapply(1:ncol(s),function(n)s[,n])
+   })
+   summaries <- unlist(summaries,recursive=FALSE)
+   summaries <- clct.vectors(summaries)
+   colnames(summaries) <- cnames
+   res <- list(
+              coefficients=coefs,
+              groups=groups,
+              summaries=summaries,
+              calls=NULL
+            )
+    res <- c(res,x[[1]][c("as.row","as.col","kill.col","kill.header","coef.dim")])
+    class(res) <- "mtable"
+    res
+}
+
+c.mtable <- function(...) combine_mtables(...)
+
+
+"[.mtable" <- function(x, i, j, drop = FALSE){
+
+  coefficients <- x$coefficients
+  groups <- x$groups
+  summaries <- x$summaries
+  calls <- x$calls
+  as.row <- x$as.row
+  as.col <- x$as.col
+  kill.col <- x$kill.col
+  kill.header <- x$kill.header
+  coef.dim <- x$coef.dim
+
+  if(drop!=FALSE) warning("only 'drop=FALSE' supported")
+
+  nrows <- dim(coefficients)[3]
+  ncols <- dim(coefficients)[4]
+  rownms <- dimnames(coefficients)[[3]]
+  colnms <- dimnames(coefficients)[[4]]
+
+  mdrop <- missing(drop)
+  Narg <- nargs() - (!mdrop)
+
+  if(Narg<3){
+
+    if(missing(i)){
+
+      i <- 1:nrows
+      j <- 1:ncols
+    }
+    else {
+
+      j <- i
+      i <- 1:nrows
+    }
+  }
+  else {
+
+    if(missing(i)) i <- 1:nrows
+    if(missing(j)) j <- 1:ncols
+  }
+
+#   return(list(Narg,i,j))
+
+  if(is.character(i)) i <- match(i,rownms)
+  if(is.character(j)) j <- match(j,colnms)
+
+  if(is.logical(i)) {
+    tmp <- logical(nrows)
+    tmp[] <- i
+    i <- which(tmp)
+  }
+
+  if(is.logical(j)) {
+    tmp <- logical(ncols)
+    tmp[] <- j
+    j <- which(tmp)
+  }
+
+  coefficients <- coefficients[,,i,j,drop=FALSE]
+  summaries <- summaries[,j,drop=FALSE]
+  calls <- calls[j]
+
+  structure(
+    list(
+      coefficients=coefficients,
+      groups=groups,
+      summaries=summaries,
+      calls=calls,
+      as.row=as.row,
+      as.col=as.col,
+      kill.col=kill.col,
+      kill.header=kill.header,
+      coef.dim=coef.dim
+      ),
+  class="mtable")
+}

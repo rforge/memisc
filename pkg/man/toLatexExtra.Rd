@@ -2,6 +2,7 @@
 \alias{toLatex.default}
 \alias{toLatex.ftable}
 \alias{toLatex.matrix}
+\alias{toLatex.ftable_matrix}
 \title{Additional Methods for LaTeX Representations for R objects}
 \description{
   Methods for the generic function \code{\link[utils]{toLatex}} of package ``\link{utils}''
@@ -29,6 +30,8 @@
     bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
     extrarowsep = NULL,
     oldstyle=FALSE,
+    compact=FALSE,
+    varontop,
     \dots)
 \method{toLatex}{matrix}(object,
     show.titles=TRUE,
@@ -48,6 +51,25 @@
     midrule=if(useBooktabs) "\\\\midrule" else "\\\\hline",
     cmidrule=if(useBooktabs) "\\\\cmidrule" else "\\\\cline",
     bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
+    \dots)
+\method{toLatex}{ftable_matrix}(object,
+    show.titles=TRUE,
+    digits=0,
+    format="f",
+    useDcolumn=TRUE,
+    colspec=if(useDcolumn) paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="") else "r",
+    LaTeXdec=".",
+    ddigits=max(1,digits),
+    useBooktabs=TRUE,
+    toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
+    midrule=if(useBooktabs) "\\midrule" else "\\hline\n",
+    cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
+    bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
+    header.varnames=TRUE,
+    compact=FALSE,
+    varontop,varinfront,
+    groupsep="3pt",
+    grouprule=midrule,
     \dots)
 }
 \arguments{
@@ -79,6 +101,11 @@
      \item{extrarowsep}{extra code to be inserted between the column titles and the
      table body produced by \code{toLatex}. }
      \item{oldstyle}{logical; should the output format of previous memisc versions be used?}
+     \item{compact}{logical; should a more compact output be produced?}
+     \item{varontop}{logical; should outermost column variables be shown on the top of the table?
+        Defaults to FALSE, unless there is only one column variable in each ftable.}
+     \item{varinfront}{logical; should outermost row variables be shown in the front column of the table?
+        Defaults to FALSE, unless there is only one row variable in each ftable.}
      \item{\dots}{further argument, currently ignored.}
 }
 \examples{

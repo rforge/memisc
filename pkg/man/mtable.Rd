@@ -5,17 +5,22 @@
 \alias{print.mtable}
 \alias{toLatex.mtable}
 \alias{write.mtable}
+\alias{c.mtable}
+\alias{[.mtable}
 \title{Comparative Table of Model Estimates}
 \description{
   \code{mtable} produces a table of estimates for several models.
   }
 \usage{
-mtable(...,coef.style=getOption("coef.style"),
+mtable(\dots,list=NULL,
+    coef.style=getOption("coef.style"),
     summary.stats=TRUE,
     factor.style=getOption("factor.style"),
+    baselevel.sep=getOption("baselevel.sep"),
     getSummary=eval.parent(quote(getSummary)),
     float.style=getOption("float.style"),
     digits=min(3,getOption("digits")),
+    signif.symbols=getOption("signif.symbols"),
     drop=TRUE
   )
 \method{relabel}{mtable}(x, \dots, gsub = FALSE, fixed = !gsub, warn = FALSE)
@@ -51,25 +56,26 @@ mtable(...,coef.style=getOption("coef.style"),
     drop = TRUE,
     shrink = FALSE,
     summary.format=character(),
-    ...
+    \dots
     )
 
 \method{print}{mtable}(x,trim=FALSE,center.at=getOption("OutDec"),
     colsep=" ",
-    topsep="=",bottomsep="=",sectionsep="-",...)
+    topsep="=",bottomsep="=",sectionsep="-",\dots)
 
-\method{toLatex}{mtable}(object,...)
+\method{toLatex}{mtable}(object,\dots)
 
-write.mtable(object,file="",...)
+write.mtable(object,file="",\dots)
 }
 \arguments{
-     \item{...}{as argument to \code{mtable}: several model objects, e.g. of class \code{\link{lm}}; as argument to \code{print.mtable},
+     \item{\dots}{as argument to \code{mtable}: one or several model objects, e.g. of class \code{\link{lm}}; as argument to \code{print.mtable},
      \code{toLatex.mtable}, \code{write.mtable}: further arguments
      passed to \code{format.mtable}; as argument to \code{format.mtable}:
      further arguments passed to \code{format.default};
      as argument to \code{relabel.mtable}: further arguments
      passed to \code{\link{dimrename}}.
      }
+     \item{list}{an optional list containing one or several model objects, e.g. of class \code{\link{lm}}}
      \item{coef.style}{a character string which specifies the style of
         coefficient values, whether standard errors, Wald/t-statistics,
          or significance levels are reported, etc. See \code{\link{coef.style}}.}
@@ -88,6 +94,9 @@ write.mtable(object,file="",...)
      \item{digits}{number of significant digits if not specified by
         the template returned from \code{\link{getCoefTemplate}}
         \code{\link{getSummaryTemplate}}
+        }
+     \item{signif.symbols}{a named vector; should be between zero and unity.
+        Described how p-values are represented via symbols.
         }
      \item{drop}{logical value; should redundant column headings
         dropped if only one model is given as argument?}
@@ -141,7 +150,7 @@ write.mtable(object,file="",...)
           those summaries indicated by the names of the \code{summary.format}
           argument.
           }
-     \item{file}{a file where to write to; defaults to console output.}
+     \item{file}{name of a file where to write to; defaults to console output.}
 }
 \details{
   \code{mtable} constructs a table of estimates for regression-type models.
@@ -230,18 +239,44 @@ mtable(berk0,berk1,berk2,
           coef.style="all.nostar",
           summary.stats=c("Deviance","AIC","N"))
 
-mtable(by(berkeley,berkeley$Dept,function(x)glm(cbind(Admitted,Rejected)~Gender,
+mtable(list=list(berk0,berk1,berk2),
+          coef.style="all.nostar",
+          summary.stats=c("Deviance","AIC","N"))
+
+berklist <- list(berk0,berk1,berk2)          
+mtable(list=berklist,
+          coef.style="all.nostar",
+          summary.stats=c("Deviance","AIC","N"))
+
+berklist <- list(B0=berk0,B1=berk1,B2=berk2)
+mtable(list=berklist,
+          coef.style="all.nostar",
+          summary.stats=c("Deviance","AIC","N"))
+          
+mtable(list=by(berkeley,berkeley$Dept,function(x)glm(cbind(Admitted,Rejected)~Gender,
         data=x,family="binomial")),
       summary.stats=c("Likelihood-ratio","N"))
 
 
-mtable(By(~Gender,glm(cbind(Admitted,Rejected)~Dept,family="binomial"),
+mtable(list=By(~Gender,glm(cbind(Admitted,Rejected)~Dept,family="binomial"),
         data=berkeley),
       summary.stats=c("Likelihood-ratio","N"))
 
 berkfull <- glm(cbind(Admitted,Rejected)~Dept/Gender - 1,
                       data=berkeley,family="binomial")
 relabel(mtable(berkfull),Dept="Department",gsub=TRUE)
+
+c(
+  mtable123[c("Model 1","Model 2")],
+  mtable123["Model 3"]
+)
+
+mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
+                    summary.stats=c("sigma","R-squared","F","p","N"),
+                    signif.symbols=c("[a]"=.01,"[b]"=0.05,"[c]"=0.1)
+       )
+
+
 
 }
 \keyword{misc}

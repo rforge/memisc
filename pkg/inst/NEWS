@@ -1,8 +1,15 @@
-2012-10-01:
-  - Implemented 'cbind' and 'rbind' methods for 'ftable' objects. These
-    return objects of classes 'cbound_ftables' and 'rbound_ftables', respectively.
-    'format' and 'print' methods are defined for these classes.
+2012-12-31:
+  - Implemented 'c' (concatenate) and '[' (subset) methods for 'mtable' objects.
 
+2012-10-41:
+  - Implemented 'cbind' and 'rbind' methods for 'ftable' objects. These
+    return objects of classes 'ftable_matrix'.
+    'cbind', 'rbind', 'format' and 'print' methods are defined for these classes.
+
+2012-09-26:
+  - Implemented a 'percent' method for tables and the function 'marginal.table', which
+    is intended to be a more convenient version of 'margin.table'.
+    
 2012-07-22:
   - Integrated further extensions for 'mtable': Thanks to contributions
     from Jason W. Morgan and Achim Zeileis 'mtable' now handles various survival models,
@@ -16,7 +23,7 @@
     new versions of R.
 
 2012-07-19:
-  - Seperated out the infrastructure of 'item' and 'data.set' classes into another
+  - Separated out the infrastructure of 'item' and 'data.set' classes into another
     package called 'codebooks'.
   - Improvements of genTable and aggregate.formula: Some aggregations should
     be quicker because of internal use of the Table2 and percent2 functions.

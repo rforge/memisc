@@ -2,8 +2,8 @@ Package: memisc
 Type: Package
 Title: Tools for Management of Survey Data, Graphics, Programming,
         Statistics, and Simulation
-Version: 0.99
-Date: 2012-10-01
+Version: 0.999
+Date: 2013-01-01
 Authors@R: c(person("Martin","Elff",role=c("aut","cre"),email="elff@gmx.com"),
             person(c("Christopher"," N."),"Lawrence",role="ctb"),
             person(c("Jason","W."),"Morgan",role="ctb"),

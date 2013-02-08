@@ -32,6 +32,7 @@ export(
       Table2,
       percent,
       percent2,
+      marginal.table,
       By,
       Sapply,
       Lapply,
@@ -119,7 +120,11 @@ S3method(as.matrix,textfile_bucket)
 S3method("[",bucket)
 S3method(cbind,ftable)
 S3method(rbind,ftable)
-S3method(format,cbound_ftables)
-S3method(print,cbound_ftables)
-S3method(format,rbound_ftables)
-S3method(print,rbound_ftables)
+S3method(cbind,ftable_matrix)
+S3method(rbind,ftable_matrix)
+S3method(format,ftable_matrix)
+S3method(write,ftable_matrix)
+S3method(print,ftable_matrix)
+S3method(toLatex,ftable_matrix)
+S3method(c,mtable)
+S3method("[",mtable)
