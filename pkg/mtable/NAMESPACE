@@ -1,0 +1,72 @@
+import(stats,methods,utils,mutils)
+importFrom(utils,toLatex)
+export(
+      mtable,
+      write.mtable,
+      getSummary,
+      getSummary.glm,
+      getSummary.lm,
+      applyTemplate,
+      getSummaryTemplate,
+      setSummaryTemplate,
+      getCoefTemplate,
+      setCoefTemplate,
+      Aggregate,
+      genTable,
+      Table,
+      Table2,
+      percent,
+      percent2,
+      marginal.table,
+      By,
+      fapply,
+      getSummary.clm,        # Christopher N. Lawrence
+      getSummary.polr,
+      getSummary.simex,
+      getSummary.expcoef,    # Dave Atkins
+      getSummary.expcoef.glm,
+      getSummary.aftreg,     # Jason Morgan
+      getSummary.coxph,      
+      getSummary.phreg,
+      getSummary.survreg,
+      getSummary.weibreg,
+      getSummary.mer,
+      getSummary.ivreg,       # Achim Zeileis
+      getSummary.tobit,
+      getSummary.hurdle,
+      getSummary.zeroinfl,
+      getSummary.betareg,
+      getSummary.multinom
+      )
+S3method(getSummary,lm)
+S3method(getSummary,glm)
+S3method(getSummary.expcoef,glm)
+S3method(print,mtable)
+S3method(format,mtable)
+S3method(toLatex,default)
+S3method(toLatex,matrix)
+S3method(toLatex,mtable)
+S3method(toLatex,ftable)
+S3method(relabel,mtable)
+S3method(fapply,default)
+S3method(Table,default)
+S3method(Table,factor)
+S3method(Table2,default)
+S3method(Table2,factor)
+S3method(percent,default)
+S3method(percent,logical)
+S3method(percent,table)
+S3method(percent2,default)
+S3method(percent2,logical)
+S3method(By,default)
+S3method(By,data.frame)
+S3method(cbind,ftable)
+S3method(rbind,ftable)
+S3method(cbind,ftable_matrix)
+S3method(rbind,ftable_matrix)
+S3method(format,ftable_matrix)
+S3method(write,ftable_matrix)
+S3method(print,ftable_matrix)
+S3method(toLatex,ftable_matrix)
+S3method(c,mtable)
+S3method("[",mtable)

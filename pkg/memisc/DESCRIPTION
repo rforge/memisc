@@ -1,0 +1,15 @@
+Package: memisc
+Type: Package
+Title: Tools for Management of Survey Data, Graphics, Programming,
+        Statistics, and Simulation
+Version: 1.0
+Date: 2013-03-10
+Author: Martin Elff
+Maintainer: Martin Elff <elff@gmx.com>
+Description: This package is now nothing more than a compatibility layer for
+  packages that depend on memisc. It is now superseeded by the packages
+  mutils, mtable, msimul, mplot, and codebook
+License: GPL-2
+LazyLoad: Yes
+Depends: R (>= 2.15.0), mutils, mtable, msimul, mplot, codebooks
+URL: http://r-forge.r-project.org/projects/memisc/

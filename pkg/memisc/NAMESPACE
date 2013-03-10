@@ -1,0 +1,3 @@
+import(mutils,mtable,msimul,mplot,codebooks)
+S3method(aggregate,formula)
+

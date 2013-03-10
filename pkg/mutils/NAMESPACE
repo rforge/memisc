@@ -1,0 +1,43 @@
+useDynLib(mutils)
+
+importFrom(stats,reorder)
+importFrom(utils,getFromNamespace)
+
+export(
+      colrename,
+      dimrename,
+      relabel,
+      rename,
+      rowrename,
+      trimws,
+      sort.data.frame,
+      retain,
+      collect,
+      cases,
+      recode,
+      "%nin%",
+      numericIfPossible,
+      Foreach,
+      syms,
+      as.symbols,
+      Substitute,
+      Sapply,
+      Lapply,
+      clct.vectors,
+      clct.arrays,
+      clct.lists,
+      UnZip
+      )
+
+S3method(relabel,default)
+S3method(relabel,factor)
+S3method(reorder,matrix)
+S3method(reorder,array)
+S3method(collect,default)
+S3method(collect,matrix)
+S3method(collect,array)
+S3method(collect,table)
+S3method(collect,data.frame)
+S3method(collect,by)
+
+exportMethods(sample,recode)

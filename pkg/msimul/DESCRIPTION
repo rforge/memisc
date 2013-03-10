@@ -1,0 +1,14 @@
+Package: msimul
+Type: Package
+Title: Utilities for Simulation in Monte Carlo Experiments
+Version: 0.99
+Date: 2013-03-09
+Author: Martin Elff
+Maintainer: Martin Elff <elff@gmx.com>
+Description: This package provides some infrastructure that eases the setup of
+  Monte Carlo expriments and studies of estimators.
+License: GPL-2
+LazyLoad: Yes
+Depends: R (>= 2.15.0), stats, methods, mutils
+Suggests: mtable
+URL: http://r-forge.r-project.org/projects/memisc/

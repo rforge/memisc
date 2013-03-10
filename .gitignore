@@ -13,6 +13,7 @@
 .gitignore
 .Rhistory
 /memisc_*.zip
+/memisc_*.tar.gz
 /mtable123.tex
 /mtable123.txt
 .Rproj.user
@@ -22,3 +23,4 @@
 /memisc.Rproj
 /.RData
 /texput.log
+/memisc_0.95-39.tar.gz.backup.20130126
