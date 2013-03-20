@@ -14,4 +14,4 @@ Depends: mutils, methods
 Imports: mtable
 Suggests: mtable
 Enhances: mtable
-URL: http://codebooks.r-forge.r-project.org/
+URL: http://memisc.r-forge.r-project.org/
