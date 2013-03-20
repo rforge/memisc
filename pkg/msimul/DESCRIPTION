@@ -2,7 +2,7 @@ Package: msimul
 Type: Package
 Title: Utilities for Simulation in Monte Carlo Experiments
 Version: 0.99
-Date: 2013-03-09
+Date: 2013-03-21
 Author: Martin Elff
 Maintainer: Martin Elff <elff@gmx.com>
 Description: This package provides some infrastructure that eases the setup of

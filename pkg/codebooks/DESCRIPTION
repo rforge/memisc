@@ -2,7 +2,7 @@ Package: codebooks
 Type: Package
 Title: Management of Survey Data
 Version: 0.99
-Date: 2013-02-19
+Date: 2013-03-21
 Author: Martin Elff
 Maintainer: Martin Elff <elff@gmx.com>
 Description: This package provides an infrastructure for the management of
