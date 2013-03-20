@@ -42,7 +42,7 @@
   \method{getSummary}{phreg}(obj, alpha=.05,\dots)
   \method{getSummary}{survreg}(obj, alpha=.05,\dots)
   \method{getSummary}{weibreg}(obj, alpha=.05,\dots)
-  \method{getSummary}{mer}(obj, alpha=.05,\dots)
+  \method{getSummary}{mer}(obj, alpha=.05, varPar.as.coef = TRUE, \dots)
 
   # These are contributed by Achim Zeileis
   \method{getSummary}{ivreg}(obj, alpha=.05,\dots)
@@ -62,6 +62,8 @@
   \item{obj}{a model object, e.g. of class \code{lm} or \code{glm}}
   \item{alpha}{level of the confidence intervals; their coverage should
     be 1-alpha/2 }
+  \item{varPar.as.coef}{logical; should variance parameters included into the
+    table of coefficients?}
   \item{\dots}{further arguments; ignored.}
 }
 \details{
@@ -103,13 +105,7 @@
   \item{sumstat}{a vector containing the model summary statistics;
     the components may have arbitrary names.}
 }
-\note{
-  \code{getSummary.clm}, \code{getSummary.polr} and \code{getSummary.simex} are contributions
-  from Christopher N. Lawrence (Texas A&M International University).
-  \code{getSummary.}
-  \code{getSummary.expcoef.glm} is a contribution
-  from Dave Atkins (Unversity of Washington).
-}
+
 
 \keyword{misc}
 \keyword{utilities}

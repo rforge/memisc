@@ -974,7 +974,7 @@ c.mtable <- function(...) combine_mtables(...)
     tmp[] <- j
     j <- which(tmp)
   }
-  if(dim(summaries)[2]==dim(coefficients)[4]){
+  if(length(summaries) && dim(summaries)[2]==dim(coefficients)[4]){
     summaries <- summaries[,j,drop=FALSE]
     calls <- calls[j]
     }
