@@ -1,10 +1,12 @@
 \name{codebook}
 \alias{codebook}
+\alias{codebook,factor-method}
 \alias{codebook,item-method}
 \alias{codebook,data.set-method}
 \alias{codebook,importer-method}
 \alias{codebook,atomic-method}
 \alias{codebook,data.frame-method}
+\alias{as.character,codebook-method}
 \alias{codebook-class}
 \alias{format,codebookEntry-method}
 \alias{show,codebook-method}
@@ -21,11 +23,12 @@ codebook(x)
 \S4method{codebook}{importer}(x)
 }
 \arguments{
-  \item{x}{an atomic vector, data frame, \code{\link{item}},  \code{\link{data.set}} or \code{\link{importer}} object.}
+  \item{x}{an atomic vector, factor, data frame, \code{\link{item}},  \code{\link{data.set}} or \code{\link{importer}} object.}
 }
 \value{
   An object of class "codebook", for which a \code{\link{show}} method exists that
-  produces a nicely formatted output.
+  produces a nicely formatted output. To export the formatted codebook into a text file
+  one can use \code{as.character} in conjunction with \code{\link{writeLines}}.
 }
 \examples{
 Data <- data.set(
@@ -77,5 +80,11 @@ codebook(within(iris,{
     oSpecies <- ordered(Species)
   }))
 
+\dontrun{
+# Write the codebook of a data set to a file:
+writeLines(as.character(codebook(Data)),
+  con="Data-cdbk.txt")
+}
+  
 }
 \keyword{manip}

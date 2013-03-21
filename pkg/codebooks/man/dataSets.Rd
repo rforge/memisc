@@ -6,6 +6,7 @@
 \alias{within,data.set-method}
 \alias{print,data.set-method}
 \alias{show,data.set-method}
+\alias{View,data.set-method}
 \alias{summary,data.set-method}
 \alias{as.data.frame.data.set}
 \alias{str.data.set}
@@ -21,6 +22,7 @@
 \alias{row.names,data.set-method}
 \alias{coerce,data.frame,data.set-method}
 \alias{coerce,matrix,data.set-method}
+\alias{coerce,data.set,named.list-method}
 \title{Data Set Objects}
 \description{
   \code{"data.set"} objects are collections of \code{"item"} objects,

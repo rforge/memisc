@@ -843,7 +843,7 @@ collect.data.set <- function(...,
     }
   }
   all.vars <- lapply(args,names)
-  common.vars <- reduce(all.vars,intersect)
+  common.vars <- mutils:::reduce(all.vars,intersect)
   all.vars <- mutils:::reduce(all.vars,union)
   other.vars <- setdiff(all.vars,common.vars)
   source <- rep(seq_along(args),sapply(args,nrow))
