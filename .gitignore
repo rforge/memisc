@@ -2,6 +2,7 @@
 *.[oa]
 *.so
 *~
+*.R
 
 /pkg/man/.Rhistory
 /memisc
@@ -25,3 +26,6 @@
 /texput.log
 /memisc_0.95-39.tar.gz.backup.20130126
 /memisc-clang-warnings.txt.mht
+/memisc-0.96/memisc-0.96.Rproj
+/memisc-0.96/.Rbuildignore
+/memisc-clang-warnings.txt
