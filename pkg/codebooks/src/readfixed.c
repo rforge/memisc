@@ -11,15 +11,15 @@
 
 int _R_atoi(char *text){
   char *end_ptr;
-  if(!strlen(text)) return NA_INTEGER;
-  int result = strtol(text,&end_ptr,10);
+  if(!strlen(text)) return NA_INTEGER; 
+  int result = (int)strtol(text,&end_ptr,10);
   if(!isdigit(end_ptr[-1])) return NA_INTEGER;
   else return result;
 }
 
 double _R_atof(char *text){
   char *end_ptr;
-  if(!strlen(text)) return NA_REAL;
+  if(!strlen(text)) return NA_REAL; 
   double result = strtod(text,&end_ptr);
   if(!isdigit(end_ptr[-1]) && isdigit(end_ptr[-1]) != '.') return NA_REAL;
   else return result;
