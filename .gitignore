@@ -2,7 +2,7 @@
 *.[oa]
 *.so
 *~
-*.R
+*.R*
 
 /pkg/man/.Rhistory
 /memisc
@@ -10,7 +10,7 @@
 /requests
 /test
 /pkg.Rcheck
-/*.Rcheck
+*.Rcheck
 .gitignore
 .Rhistory
 /memisc_*.zip
@@ -22,7 +22,7 @@
 /lt23-10-2.tex
 /lt789.tex
 /memisc.Rproj
-/.RData
+.RData
 /texput.log
 /memisc_0.95-39.tar.gz.backup.20130126
 /memisc-clang-warnings.txt.mht
