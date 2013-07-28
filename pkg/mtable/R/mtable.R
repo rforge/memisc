@@ -931,10 +931,12 @@ c.mtable <- function(...) combine_mtables(...)
 
   if(drop!=FALSE) warning("only 'drop=FALSE' supported")
 
+  cfdim <- length(dim(coefficients))
+  
   nrows <- dim(coefficients)[3]
-  ncols <- dim(coefficients)[4]
+  ncols <- dim(coefficients)[cfdim]
   rownms <- dimnames(coefficients)[[3]]
-  colnms <- dimnames(coefficients)[[4]]
+  colnms <- dimnames(coefficients)[[cfdim]]
 
   mdrop <- missing(drop)
   Narg <- nargs() - (!mdrop)
@@ -958,7 +960,7 @@ c.mtable <- function(...) combine_mtables(...)
     if(missing(j)) j <- 1:ncols
   }
 
-#   return(list(Narg,i,j))
+#   return(list(Narg,i,j))(
 
   if(is.character(i)) i <- match(i,rownms)
   if(is.character(j)) j <- match(j,colnms)
@@ -974,12 +976,21 @@ c.mtable <- function(...) combine_mtables(...)
     tmp[] <- j
     j <- which(tmp)
   }
-  if(length(summaries) && dim(summaries)[2]==dim(coefficients)[4]){
+  if(length(summaries) && dim(summaries)[2]==dim(coefficients)[cfdim]){
     summaries <- summaries[,j,drop=FALSE]
     calls <- calls[j]
     }
-  coefficients <- coefficients[,,i,j,drop=FALSE]
-
+  if(cfdim==2)
+    coefficients <- coefficients[i,j,drop=FALSE]
+  else if(cfdim==3)
+    coefficients <- coefficients[,i,j,drop=FALSE]
+  else if(cfdim==4)
+    coefficients <- coefficients[,,i,j,drop=FALSE]
+  else if(cfdim==5)
+    coefficients <- coefficients[,,i,,j,drop=FALSE]
+  else
+    stop("no support for table of this structure yet")
+    
   structure(
     list(
       coefficients=coefficients,
@@ -993,4 +1004,15 @@ c.mtable <- function(...) combine_mtables(...)
       coef.dim=coef.dim
       ),
   class="mtable")
+}
+
+dim.mtable <- function(x){
+
+  coefficients <- x$coefficients
+  cfdim <- length(dim(coefficients))
+  
+  nrows <- dim(coefficients)[3]
+  ncols <- dim(coefficients)[cfdim]
+  
+  c(nrows,ncols)
 }
