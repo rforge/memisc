@@ -128,8 +128,8 @@ exportMethods(
     Table,
     codebook,
     path,
-    query,
-    View
+    query#,
+    #View
     )
 S3method(as.data.frame,character.item)
 S3method(as.data.frame,double.item)

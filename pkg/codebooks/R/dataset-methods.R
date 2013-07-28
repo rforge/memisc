@@ -110,7 +110,7 @@ setAs("data.set","named.list",function(from,to){
   new(to,structure(from@.Data,names=from@names))
   })
 
-dim.data.set <- dim.data.frame
+# dim.data.set <- dim.data.frame
 setMethod("dim","data.set",function(x)
   c( length(x@row_names),
      length(x@.Data)
@@ -276,7 +276,8 @@ data.set <- function(..., row.names = NULL, check.rows = FALSE, check.names = TR
     c(args,
       row.names=row.names,
       check.rows=check.rows,
-      check.names=check.names
+      check.names=check.names,
+      stringsAsFactors=stringsAsFactors
     ))
   new("data.set",
     frame,
