@@ -3,7 +3,7 @@ car_recode <- function (var, recodes, as.factor.result, levels)
   stop("package 'car' is not available")
 
 car_pkg <-"car"
-memisc_env <- environment()
+mtable_env <- environment()
 
 
 .onLoad <- function(lib,pkg){
@@ -13,7 +13,7 @@ memisc_env <- environment()
 
   if(any(car_pkg == .packages(TRUE))){
     car_recode <- getFromNamespace("recode",ns=car_pkg)
-    assign("car_recode",car_recode,envir=memisc_env)
+    assign("car_recode",car_recode,envir=mtable_env)
   }
 
   options(coef.style="default")
@@ -28,9 +28,6 @@ memisc_env <- environment()
   options(labelled.factor.coerce.NA = FALSE)
 }
 
-.onUnload <- function(libpath)
-{
-    library.dynam.unload("memisc", libpath)
-}
+
 
 
