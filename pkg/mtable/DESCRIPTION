@@ -2,7 +2,7 @@ Package: mtable
 Type: Package
 Title: Creating Tables of Model Estimates and of Descriptive Statistics
 Version: 0.99
-Date: 2013-03-09
+Date: 2013-07-31
 Authors@R: c(person("Martin","Elff",role=c("aut","cre"),email="elff@gmx.com"),
             person(c("Christopher"," N."),"Lawrence",role="ctb"),
             person(c("Jason","W."),"Morgan",role="ctb"),
