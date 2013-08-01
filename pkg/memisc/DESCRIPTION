@@ -3,7 +3,7 @@ Type: Package
 Title: Tools for Management of Survey Data, Graphics, Programming,
         Statistics, and Simulation
 Version: 1.0
-Date: 2013-03-21
+Date: 2013-08-01
 Author: Martin Elff
 Maintainer: Martin Elff <elff@gmx.com>
 Description: This package is now nothing more than a compatibility layer for
