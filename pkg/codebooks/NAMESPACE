@@ -1,7 +1,7 @@
 useDynLib(codebooks)
 import(stats,methods,mutils)
 importFrom(utils,toLatex,head,tail,capture.output)
-importFrom(mtable,fapply,Table,percent)
+importFrom(mtable,fapply,Table,percent,Table2)
 export(
       contr,
       contr.treatment,
@@ -96,7 +96,6 @@ exportMethods(
     Math,
     Math2,
     Summary,
-    weighted.mean,
     format,
     print,
     show,

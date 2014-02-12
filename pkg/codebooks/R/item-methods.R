@@ -547,10 +547,3 @@ setMethod("rep","item.vector",function(x,...){
   x
 })
 
-setMethod("weighted.mean","item.vector",function(x,w, ..., na.rm = TRUE){
-
-  x <- as.vector(x)
-  w <- as.vector(w)
-#   browser()
-  stats:::weighted.mean.default(x=x,w=w,...,na.rm=na.rm)
-})

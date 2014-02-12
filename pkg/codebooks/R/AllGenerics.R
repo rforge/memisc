@@ -68,3 +68,5 @@ setGeneric("percent2",function(x,by,...){
 })
 
 # setGeneric("unique",function(x,...)standardGeneric("unique"))
+
+setGeneric("recode", function(x,...,otherwise=NA) standardGeneric("recode"))
