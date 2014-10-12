@@ -1,3 +1,8 @@
 import(mutils,mtable,msimul,mplot,codebooks)
+export(
+  setSummaryTemplate,
+  "%nin%",
+  relabel
+  )
 S3method(aggregate,formula)
 

@@ -20,23 +20,25 @@ export(
       marginal.table,
       By,
       fapply,
+      to.data.frame,
       getSummary.clm,        # Christopher N. Lawrence
-      getSummary.polr,
-      getSummary.simex,
+      getSummary.polr,       # Christopher N. Lawrence
+      getSummary.simex,      # Christopher N. Lawrence
       getSummary.expcoef,    # Dave Atkins
-      getSummary.expcoef.glm,
+      getSummary.expcoef.glm,# Dave Atkins
       getSummary.aftreg,     # Jason Morgan
-      getSummary.coxph,      
-      getSummary.phreg,
-      getSummary.survreg,
-      getSummary.weibreg,
-      getSummary.mer,
-      getSummary.ivreg,       # Achim Zeileis
-      getSummary.tobit,
-      getSummary.hurdle,
-      getSummary.zeroinfl,
-      getSummary.betareg,
-      getSummary.multinom
+      getSummary.coxph,      # Jason Morgan
+      getSummary.phreg,      # Jason Morgan
+      getSummary.survreg,    # Jason Morgan
+      getSummary.weibreg,    # Jason Morgan
+      getSummary.mer,        # Jason Morgan
+      getSummary.ivreg,      # Achim Zeileis
+      getSummary.tobit,      # Achim Zeileis
+      getSummary.hurdle,     # Achim Zeileis
+      getSummary.zeroinfl,   # Achim Zeileis
+      getSummary.betareg,    # Achim Zeileis
+      getSummary.multinom,   # Achim Zeileis
+      getSummary.merMod
       )
 S3method(getSummary,lm)
 S3method(getSummary,glm)
