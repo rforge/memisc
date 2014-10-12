@@ -16,11 +16,17 @@ By.default <- function(formula,expr,data=parent.frame()){
   factors <- data[factors]
   nd <- nrow(data)
   ans <- eval(substitute(tapply(1:nd, factors, fun)), data)
-  ans.is.nonnull <- !sapply(ans,is.null)
-  if(!all(ans.is.nonnull)){
-    ans <- if(is.matrix(ans)) ans[,ans.is.nonnull]
-           else ans[ans.is.nonnull]
-  }
+#   ans.is.nonnull <- !sapply(ans,is.null)
+#   if(!all(ans.is.nonnull)){
+#     ans <- if(is.matrix(ans)) ans[,ans.is.nonnull]
+#            else ans[ans.is.nonnull]
+#   }
+
+  dn <- lapply(factors,levels)
+  d <- sapply(dn,length)
+  dim(ans) <- d
+  dimnames(ans) <- dn
+
   attr(ans, "call") <- match.call()
   class(ans) <- "by"
   ans
@@ -47,11 +53,17 @@ By.data.frame <- function(formula,expr,data){
   factors <- data[factors]
   nd <- nrow(data)
   ans <- eval(substitute(tapply(1:nd, factors, fun)), data)
-  ans.is.nonnull <- !sapply(ans,is.null)
-  if(!all(ans.is.nonnull)){
-    ans <- if(is.matrix(ans)) ans[,ans.is.nonnull]
-           else ans[ans.is.nonnull]
-  }
+#   ans.is.nonnull <- !sapply(ans,is.null)
+#   if(!all(ans.is.nonnull)){
+#     ans <- if(is.matrix(ans)) ans[,ans.is.nonnull]
+#            else ans[ans.is.nonnull]
+#   }
+
+  dn <- lapply(factors,levels)
+  d <- sapply(dn,length)
+  dim(ans) <- d
+  dimnames(ans) <- dn
+
   attr(ans, "call") <- match.call()
   class(ans) <- "by"
   ans
