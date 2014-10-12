@@ -9,27 +9,18 @@ Table2 <- function(x,by,...){
 
 Table2.default <- function(x,
             by,weights=NULL,counts=TRUE,percentage=FALSE,...) {
-        message("Table2.default")
+#         message("Table2.default")
         if(!(counts || percentage)) stop("either counts or percentage must be TRUE")
           if(!length(weights)){
             tab <- drop(table(by,x))
           } else {
-            by.valid <- is.finite(by)
-            unique.by <- unique(by[by.valid])
-            i <- match(by,unique.by)
-            n.i <- length(unique.by)
-            good <- is.finite(weights) & is.finite(x)
+            good <- !is.missing(weights) & !is.missing(x) & !is.missing(by)
+            unique.by <- unique(by[good])
+            i <- match(by[good],unique.by)
             j <- x[good]
             ux <- sort(unique(j))
             j <- match(j,ux)
-            n.j <- length(ux)
-            nbins <- n.i * n.j
-            ij <- i + (j-1)*n.i
-            weights <- weights[good]
-            f <- factor(ij,1:nbins)
-            tab <- rowsum(weights[good],f[good])
-            dim(tab) <- c(n.i,n.j)
-            colnames(tab) <- ux
+            tab <- rowsum2(weights[good],i,j,default=0)
           }
 
         if(percentage) {
@@ -64,19 +55,19 @@ Table2.factor <- function(x,
           if(!length(weights)){
             tab <- drop(table(by,x))
           } else {
-            by.valid <- is.finite(by)
-            unique.by <- unique(by[by.valid])
-            i <- match(by,unique.by)
-            n.i <- length(unique.by)
-            good <- is.finite(weights) & is.finite(x)
-            j <- as.integer(x[good])
-            n.j <- nlevels(x)
-            nbins <- n.i * n.j
-            ij <- i + (j-1)*n.i
-            weights <- weights[good]
-            f <- factor(ij,1:nbins)
-            tab <- rowsum(weights[good],f[good])
-            dim(tab) <- c(n.i,n.j)
+            good <- !is.missing(weights) & !is.missing(x) & !is.missing(by)
+            by.good <- by[good]
+            unique.by.good <- unique(by[good])
+            i <- match(by.good,unique.by.good)
+            j <- x[good]
+            ux <- sort(unique(j))
+            j <- match(j,ux)
+            tmp <- rowsum2(weights[good],i,j,default=0)
+            
+            unique.by <- unique(by)
+            tab <- array(0,dim=c(length(unique.by),ncol(tmp)))
+            i <- match(unique.by.good,unique.by)
+            tab[i,] <- tmp
             colnames(tab) <- levels(x)
           }
 

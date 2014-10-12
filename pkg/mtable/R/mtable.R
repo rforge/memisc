@@ -119,7 +119,8 @@ mtable <- function(...,
                     signif.symbols=getOption("signif.symbols"),
                     drop=TRUE,
                     gs.args=NULL,
-                    relabel=NULL
+                    relabel=NULL,
+                    elim.fixed=TRUE
                     ){
   args <- list(...)
   argnames <- names(args)
@@ -183,6 +184,7 @@ mtable <- function(...,
                         factor.style=factor.style,
                         baselevel.sep)
         adims <- if(length(dim(coef))==2) 1 else c(1,3)
+        if (elim.fixed) coef <- elim.fixed(coef)
         ans <- apply(coef,adims,function(x)applyTemplate(x,
             template=ctemplate,float.style=float.style,digits=digits,signif.symbols=signif.symbols))
         if(length(dim(ctemplate))){
@@ -439,7 +441,7 @@ format.mtable <- function(x,
           center.summaries=FALSE,
           drop=TRUE,
           shrink=FALSE,
-          summary.format=character(),
+          summary.format=if(useDcolumn) "D{.}{.}{1}" else "",
           ...
           ){
 
@@ -676,6 +678,7 @@ format.mtable <- function(x,
 
           tmp <- summaries[n,]
           fmt <- summary.format[n]
+          fmt <- paste("\\multicolumn{1}{",fmt,"}{#}")
           tmp <- sapply(tmp,function(x)gsub("#",x,fmt))
           summaries[n,] <- tmp
         }
@@ -737,7 +740,7 @@ format.mtable <- function(x,
     header <- paste(header,"\\\\",sep="")
 
     if(length(cmidrule) && length(col.vars)>1){
-        ccol.vars <- rev(col.vars[-1])
+      ccol.vars <- rev(col.vars[-1])
       n.grps <- length(ccol.vars[[1]])
       len.grps <- ncol(coefs)/n.grps + 1
       strt.grps <- length(row.vars)+1 + (seq(n.grps)-1)*len.grps+1
@@ -753,7 +756,7 @@ format.mtable <- function(x,
         ccmidrule <- paste(cmidrule,"{",strt.cmrl,"-",end.cmrl,"}",sep="")
         cmidrules[i] <- paste(ccmidrule,collapse="")
       }
-      header <- cbind(rev(header),rev(cmidrules))
+      header <- cbind(rev(header),cmidrules)
       if(x$kill.header)
         header <- header[-x$kill.header,,drop=FALSE]
       header <- c(t(header))
@@ -779,14 +782,26 @@ format.mtable <- function(x,
             )
 
     leader.spec <- paste(rep("l",length(row.vars)),collapse="")
-    coef.spec <- character(ncol(coefs)/length(rev(col.vars)[[1]]))
-    coef.spec[] <- colspec
-    coef.spec <- paste(coef.spec,collapse="")
-    tabspec <- c(leader.spec,rep(coef.spec,length(rev(col.vars)[[1]])))
+
+    if(length(col.vars) > 1){
+
+      sz.eq <- ncol(coefs)/length(rev(col.vars)[[1]])
+      n.eq <- length(rev(col.vars)[[1]])
+      coef.spec <- matrix("",nrow=n.eq,ncol=sz.eq)
+      coef.spec[] <- colspec
+      coef.spec <- apply(coef.spec,1,paste,collapse="")
+    }
+    else {
+      coef.spec <- character(ncol(coefs))
+      coef.spec[] <- colspec
+    }
+
+    tabspec <- c(leader.spec,coef.spec)
     if(length(col.vars) > 1)
         tabspec <- paste(tabspec,collapse="c")
     else
         tabspec <- paste(tabspec,collapse="")
+
     tabbegin <- paste("\\begin{tabular}{",tabspec,"}",sep="")
     tabend <- "\\end{tabular}"
 
@@ -1015,4 +1030,21 @@ dim.mtable <- function(x){
   ncols <- dim(coefficients)[cfdim]
   
   c(nrows,ncols)
+}
+
+elim.fixed <- function(coef){
+  if(length(dim(coef))==2){
+
+    fixed <- coef[,"est"] == 0 & coef[,"se"] == 0
+    coef[fixed,] <- NA
+  }
+  else {
+
+   for(j in 1:dim(coef)[3]){
+
+    fixed <- coef[,"est",j] == 0 & coef[,"se",j] == 0
+    coef[fixed,,j] <- NA
+    }
+  }
+  coef
 }

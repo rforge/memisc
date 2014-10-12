@@ -145,8 +145,8 @@ getSummary.clm <- function(obj,
 
   betanames <- names(obj$beta)
   alphanames <- names(obj$alpha)
-  list(estimates=list(coef=cf[betanames,,drop=FALSE],
-                      thresholds=cf[alphanames,,drop=FALSE]),
+  list(estimates=list(coef=cf),#list(coef=cf[betanames,,drop=FALSE],
+                    #  thresholds=cf[alphanames,,drop=FALSE]),
     sumstat=sumstat,
     contrasts=obj$contrasts,
     xlevels=smry$xlevels,

@@ -54,6 +54,7 @@ setMethod("recode","item",function(x,...,otherwise=NA){
   #y <- if(is.character(newcodes)) as.character(x) else x
   y <- x
   labels(y) <- NULL
+  missing.values(y) <- NULL
   if(is.character(newcodes) && is.numeric(y)) {
     newcodes <- structure(
       seq_along(newcodes),

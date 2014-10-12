@@ -14,7 +14,6 @@ export(
       retain,
       collect,
       cases,
-      recode,
       "%nin%",
       numericIfPossible,
       Foreach,
@@ -26,7 +25,11 @@ export(
       clct.vectors,
       clct.arrays,
       clct.lists,
-      UnZip
+      UnZip,
+      rowsum2,
+      dimSums,
+      rowOuter,
+      genOuter
       )
 
 S3method(relabel,default)
@@ -39,5 +42,9 @@ S3method(collect,array)
 S3method(collect,table)
 S3method(collect,data.frame)
 S3method(collect,by)
+S3method(rowsum2,default)
+S3method(rowsum2,matrix)
+S3method(rowsum,array)
+S3method(dimSums,array)
 
-exportMethods(sample,recode)
+exportMethods(sample)
