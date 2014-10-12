@@ -38,7 +38,8 @@ export(
       getSummary.zeroinfl,   # Achim Zeileis
       getSummary.betareg,    # Achim Zeileis
       getSummary.multinom,   # Achim Zeileis
-      getSummary.merMod
+      getSummary.merMod,
+      as.ftable
       )
 S3method(getSummary,lm)
 S3method(getSummary,glm)
@@ -73,3 +74,5 @@ S3method(toLatex,ftable_matrix)
 S3method(c,mtable)
 S3method("[",mtable)
 S3method(dim,mtable)
+S3method(as.ftable,default)
+S3method(as.ftable,table)
