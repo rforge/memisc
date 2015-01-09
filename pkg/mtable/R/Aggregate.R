@@ -78,15 +78,6 @@ genTable <- function (formula,
 
    fcall <- formula[[2]]
 
-
-   if(mis.data){
-     data <- parent.frame()
-   }
-   else {
-     data <- force(data)
-   }
-   m$data <- data
-   
    if("." %in% all.vars(fcall)){
 
       if(length(dot)){
@@ -227,14 +218,6 @@ Aggregate <- function (formula,
    mis.data <- missing(data)
 
    fcall <- formula[[2]]
-
-   if(mis.data){
-     data <- parent.frame()
-   }
-   else {
-     data <- force(data)
-   }
-   m$data <- data
 
    if("." %in% all.vars(fcall)){
 

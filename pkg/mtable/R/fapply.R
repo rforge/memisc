@@ -26,7 +26,7 @@ quickInteraction <- function(by){
 
 fapply <- function(formula,data,...) UseMethod("fapply",data)
 
-fapply.default <- function (formula,
+fapply.default <- function(formula,
                         data,
                         subset=NULL,
                         addFreq=TRUE,
@@ -49,16 +49,12 @@ fapply.default <- function (formula,
     else
       fcall <- NULL
 
-    #names(m)[2] <- "formula"
     m$formula <- formula
-    if (is.matrix(data))
-        m$data <- data <- as.data.frame(data)
+
     m$... <- m$exclude <- m$drop.unused.levels <- m$names <- m$addFreq <- NULL
-    #m <- m[c(1,3,2)]
-    m[[1]] <- as.name("model.frame")
-    if(missing(subset)) m$subset <- NULL
-    else m$subset <- eval(substitute(subset),data,parent.frame())
-    m$data <- data
+    
+    m[[1L]] <- as.name("model.frame")
+
     by <- eval(m,parent.frame())
     omitted <- attr(by,"na.action")
     if(as.character(formula[[2]])[1]==".")
