@@ -471,14 +471,22 @@ setMethod("description","data.set",function(x){
   structure(res,class="descriptions")
 })
 
-print.descriptions <- function(x,quote=FALSE,...){
-  ans <- c(
+as.character.descriptions <- function(x,quote=FALSE,...) c(
       "",
       paste("",format(names(x),justify="left"),format(x,justify="left")),
       ""
       )
-  writeLines(ans)
+
+
+print.descriptions <- function(x,quote=FALSE,...){
+  ans <- c(
+    "",
+    paste("",format(names(x),justify="left"),format(x,justify="left")),
+    ""
+  )
+  writeLines(as.character(ans))
 }
+
 
 setMethod("unique","data.set",function(x, incomparables = FALSE, ...){
   frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
