@@ -196,7 +196,7 @@ setMethod("format","codebookEntry",
     descr <- cbind(
             format(paste(names(descr),": ",sep=""),justify="right"),
             if(is.numeric(descr))
-               format(formatC(descr,format="f",digits=3),justify="right")
+               format(formatC(unclass(descr),format="f",digits=3),justify="right")
             else
                format(descr,justify="right")
             )
