@@ -9,12 +9,12 @@ spss.portable.file <- function(
     check.file(file,error=TRUE)
     ptr <- porStream(file)
 
-    if(l10n_info()$`UTF-8`){
-      .locale <- push.locale("C")
-      restore.locale <- TRUE
-    }
-    else
-      restore.locale <- FALSE
+#     if(l10n_info()$`UTF-8`){
+#       .locale <- push.locale("C")
+#       restore.locale <- TRUE
+#     }
+#     else
+#       restore.locale <- FALSE
 
     data.spec <- parseHeaderPorStream(ptr)
     types <- data.spec$types
@@ -66,8 +66,8 @@ spss.portable.file <- function(
     document <- data.spec$document
     data.spec$document <- NULL
 
-     if(restore.locale)
-       restore.locale(.locale)
+#      if(restore.locale)
+#        restore.locale(.locale)
 
     new("spss.portable.importer",
       variables,

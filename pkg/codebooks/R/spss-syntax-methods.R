@@ -7,12 +7,12 @@ spss.fixed.file <- function(
     count.cases=TRUE
     ){
 
-    if(l10n_info()$`UTF-8`){
-      .locale <- push.locale("C")
-      restore.locale <- TRUE
-    }
-    else
-      restore.locale <- FALSE
+#     if(l10n_info()$`UTF-8`){
+#       .locale <- push.locale("C")
+#       restore.locale <- TRUE
+#     }
+#     else
+#       restore.locale <- FALSE
 
     file <- force(file)
     columns.file <- force(columns.file)
@@ -57,8 +57,8 @@ spss.fixed.file <- function(
      } else NA_integer_
      attr(fptr,"nlines") <- nlines
 
-     if(restore.locale)
-       restore.locale(.locale)
+#      if(restore.locale)
+#        restore.locale(.locale)
 
      new("spss.fixed.importer",
       variables,

@@ -1,3 +1,10 @@
+2015-01-09:
+  - 'Iconv' generic function implemented to support re-encoding of annotations and labels of items
+    in data sets and importers.
+
+2014-12-30:
+  - 'to.lower' argument of spss.system.file now also available in the 'codebooks' package
+
 2014-12-14: 
   - Correct buglet in 'recode' method for numeric vectors
 

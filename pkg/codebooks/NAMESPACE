@@ -47,7 +47,8 @@ export(
       sample,
       unique,
       query,
-      within.data.frame
+      within.data.frame,
+      Iconv
       )
 
 exportClasses(
@@ -160,3 +161,8 @@ S3method(unique,datetime.item)
 S3method(Table2,item.vector)
 S3method(percent2,item.vector)
 S3method(as.character,descriptions)
+S3method(Iconv,importer)
+S3method(Iconv,data.set)
+S3method(Iconv,item)
+S3method(Iconv,annotation)
+S3method(Iconv,value.labels)
