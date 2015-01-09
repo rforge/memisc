@@ -1,3 +1,6 @@
+2014-12-14: 
+  - Correct buglet in 'recode' method for numeric vectors
+
 2013-02-19:
   - Created 'codebook' method for factors (numeric vectors were already supported)
   - Included some bugfixes from the CRAN version of memisc
