@@ -5,7 +5,6 @@ spss.readvars <- function(f,n){
  ans <- list()
   for(i in 1:n){
     currvar <- .Call("read_sysfile_var",f)
-    currvar$name <- tolower(currvar$name)
     ans <- c(ans,list(currvar))
   }
   names(ans) <- sapply(ans,function(x)x$name)
@@ -87,7 +86,7 @@ parseSysHeader <- function(file){
     longVariableNames <- strsplit(longVariableNames,"\t")[[1]]
     longVariableNames <- strsplit(longVariableNames,"=")
     longVariableNames <- sapply(longVariableNames,function(lvn)
-        structure(lvn[2],names=tolower(lvn[1])))
+        structure(lvn[2],names=lvn[1]))
     ii <- match(names(longVariableNames),names(variables))
     names(variables)[ii] <- unname(longVariableNames)
   }
