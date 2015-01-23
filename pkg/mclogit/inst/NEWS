@@ -1,0 +1,23 @@
+2015-01-21:
+  Added `nobs` and `extractAIC` methods for `mclogit` objects, so that `drop1.default` should work with these.
+
+2015-01-19:
+  Added call to result of `getSummary.mclogit`. 
+
+2015-01-18: 
+  - Cleanup of NAMESPACE file; added aliases to methods for `mclogit` objects so that users can see that they are present.
+  - Export `mclogit.fit`, and `mclogit.fit.rePQL` to enable use by other packages.
+
+2014-10-13: 
+  Simplified some namespace dependencies. Eliminated useless pseudo-R-squared statistics 
+  from getSummary.mclogit
+
+2014-08-23:
+  Added 'anova' methods
+
+2014-03-10:
+  Refactored code -- algorithms should be more transparent and robust now (hopefully!).
+  mclogit without and with random effects can handle missing values now.
+  Fixed predict method -- use of napredict; handles single indep-variable situation now.
+  Fixed embarassing typo -- prior weights do work now (again?). 
+  Included AIC and BIC methods contributed by Nic Elliot <nic_elliot@yahoo.co.uk>

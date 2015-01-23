@@ -1,34 +1,82 @@
-2012-12-31:
-  - Implemented 'c' (concatenate) and '[' (subset) methods for 'mtable' objects.
+2014-12-14: 
+  - Correct buglet in 'recode' method for numeric vectors
 
-2012-10-41:
-  - Implemented 'cbind' and 'rbind' methods for 'ftable' objects. These
-    return objects of classes 'ftable_matrix'.
-    'cbind', 'rbind', 'format' and 'print' methods are defined for these classes.
+2014-11-04:
+  - Fixed silly bug introduced in recent update: Long variable names in SPSS "sav" files should work again now.
 
-2012-09-26:
-  - Implemented a 'percent' method for tables and the function 'marginal.table', which
-    is intended to be a more convenient version of 'margin.table'.
+2014-10-11:
+  - added method for "merMod" objects to the getSummary() generic function. mtable() now 
+    should be able (again) to handle estimation results produced by lmer() and glmer() from 
+    package 'lme4'.
+  - recode() handles character vectors in a more convenient way: They are converted
+    into factors with sorted unique values (after recoding) as levels.
+
+2014-09-08:
+  - 'getSummary.glm' now takes care of missing values in weights of glm objects.
+
+2014-08-19:
+  - modified some code that Prof Ripley thinks looks 'suspicious'.
+
+2014-06-24:
+  - Change of SPSS variable names to lower case is now optional (but still the default).
+
+2014-03-10:
+  - Removed modification to getSummary.clm that slipped in from a development branch.
+
+2013-12-06:
+  - fixes out-of-bound error and memory leak in 'pspp-portableStream-for-R.c'
+    reported by Prof. Ripley.  Eliminated calls to non-exported functions from 'lattice'.
+    Marked all example code of 'Simulate' as 'dontrun' to save time during package checks.
+    Also did some cosmetic changes to the package vignette 'anes48'.
+
+2013-09-19:
+  - fixes of some namespace import issues.
+
+2013-07-28:
+  - fix of 'data.set()' and 'Table()' functions.
+    Thanks to Gabor Grothendiek and Jeremy Jackson 
+
+2013-03-20:
+  - getSummary method for "mer" objects was broken and now is fixed.
+
+2013-02-10:
+  - getSummary methods for "ivreg", "tobit" (from package "AER"),
+    "hurdle", "zeroinfl" (from package "pscl"),
+    "betareg" (from package "betareg"),
+    "multinom" (from package "nnet"),
+    contributed by Achim Zeileis,
+    were included into the package, but had not been exported yet
+    from the package namespace.
+    This is now fixed.
+              
+
+2013-01-27:
+  - Minor improvement of 'codebook' output for external SPSS data sets.
+  - Fixed a bug in 'dumbswap.c' discovered while building a windows binary.
+  
+2013-01-26:
+  - Included getSummary methods
+     - for objects of classes "ivreg", "tobit" (from package "AER"),
+                              "hurdle", "zeroinfl" (from package "pscl"),
+                              "betareg" (from package "betareg"),
+                              "multinom" (from package "nnet"),
+                              contributed by Achim Zeileis
+    - for objects of classes "polr" (from package "MASS"),
+                             "clm" (from package "ordinal"),
+                             "simex" (from package "simex"),
+                             contributed by Christopher N. Lawrence
+    - for objects of classes "coxph", "survreg" (from package "survival"),
+                             "aftreg", "phreg", "weibreg" (from package "eha"),
+                             contributed by Jason W. Morgan,
+    - for exponentiated coefficients in glm-models,
+                             contributed by Dave Atkins.
+  - Made the 'spss.fixed.file' importer function more robust:
+      - It works now, even if 'varlab.file', 'codes.file',
+        or 'missval.file' arguments are missing. (This was broken by an earlier revision.)
+      - It now handles value labels of character string variables correctly.
     
-2012-07-22:
-  - Integrated further extensions for 'mtable': Thanks to contributions
-    from Jason W. Morgan and Achim Zeileis 'mtable' now handles various survival models,
-    hurdle models, zero-inflated models, instrumental variable models, etc.
-
-2012-07-20:
-  - Renamed function 'foreach' into 'Foreach' to avoid conflicts with the 'foreach'
-    package.
-  - Renamed the 'aggregate.formula' method into 'Aggregate' to avoid conflict with
-    the 'formula' method of the 'aggregate' generic function that is present in
-    new versions of R.
-
-2012-07-19:
-  - Separated out the infrastructure of 'item' and 'data.set' classes into another
-    package called 'codebooks'.
-  - Improvements of genTable and aggregate.formula: Some aggregations should
-    be quicker because of internal use of the Table2 and percent2 functions.
-  - Improvement of mtable: LaTeX output of model tables where each model consumes
-    only one column is more compact.
+2013-01-04:
+  - Updated contact email address. Corrected "initialize" method for "data.set" objects.
 
 2012-02-14:
   - Replaced calls to .Internal(sample()) by calls to sample.int() and eliminated

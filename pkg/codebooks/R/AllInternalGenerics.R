@@ -1,6 +1,0 @@
-setGeneric("getNobs",function(x)standardGeneric("getNobs"))
-setGeneric("readSubset",function(x,rows,cols)standardGeneric("readSubset"))
-setGeneric("codebookEntry",function(x) standardGeneric("codebookEntry"))
-# setGeneric("codebookStatsCateg",function(x,by=NULL) standardGeneric("codebookStatsCateg"))
-# setGeneric("codebookStatsMetric",function(x,by=NULL) standardGeneric("codebookStatsMetric"))
-setGeneric("relabel4",function(x,...) standardGeneric("relabel4"))
