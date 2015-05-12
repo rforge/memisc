@@ -1,7 +1,40 @@
 \name{NEWS}
 \title{memisc News}
 \encoding{UTF-8}
-
+\section{Version 0.98}{
+  \subsection{NEW FEATURES}{
+  \itemize{
+      \item Support for exporting results of various functions into HTML format is now
+      supported by the function \code{format_html}. 
+      This should make it easier to import them into HTML or word-processing
+      documents (that support importing HTML). A preview of the HTML is made available
+      by the new (generic) function \code{show_html}.
+      
+      In particular, results of the functions \code{mtable} (i.e. tables of
+      model estimates), \code{ftable} (i.e. flattened contingency tables etc.),
+      and \code{codebooks}, can be exported int HTML using \code{format_html}
+    }
+  }
+  \subsection{BUGFIXES}{
+  \itemize{
+      \item \code{spss.fixed.file} is now able to handle labelled strings and 
+       \code{value labels} and \code{missing values} statements. 
+      \item Internal C-code used by \code{spss.fixed.file} no longer assumed that
+      arguments are copied -- some strange behaviour of objects created by \code{spss.fixed.file}
+      is now corrected.
+      \item Description of items in external data sources is more complete now - the same
+      information as for items in internal \code{data.sets}.
+    }
+  }
+  \subsection{DEFUNCT}{
+    \itemize{
+      \item The functions \code{Termplot}, \code{Simulate}, and \code{panel.errbars}
+      are defunct. Graphics similar to those built with \code{panel.errbars}
+      can be created with facilities provided by the package "mplot", which 
+      is currently available on GitHub.
+    }
+  }
+}
 \section{Version 0.97 }{
   \subsection{NEW FEATURES}{
     \itemize{

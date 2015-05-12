@@ -10,6 +10,25 @@ setMethod("codebook","item",function(x){
   new("codebook",cb)
 })
 
+setMethod("codebook","data.frame",function(x){
+  cb <- lapply(x,codebookEntry)
+  new("codebook",cb)
+})
+
+setMethod("codebook","atomic",function(x){
+  xname <- paste(deparse(substitute(x)))
+  cb <- list(codebookEntry(x))
+  names(cb) <- xname
+  new("codebook",cb)
+})
+
+setMethod("codebook","factor",function(x){
+  xname <- paste(deparse(substitute(x)))
+  cb <- list(codebookEntry(x))
+  names(cb) <- xname
+  new("codebook",cb)
+})
+
 setMethod("codebookEntry","item",function(x){
   annotation <- annotation(x)
   filter <- x@value.filter
@@ -32,6 +51,60 @@ setMethod("codebookEntry","item",function(x){
     annotation = annotation
   )
 })
+
+setMethod("codebookEntry","atomic",function(x){
+  spec <- c(
+            "Storage mode:"=storage.mode(x)
+            )
+  isna <- is.na(x)
+  stats <- summary(x)
+  stats <- list(descr=c(stats))
+  new("codebookEntry",
+    spec = spec,
+    stats = stats,
+    annotation = NULL
+  )
+})
+setMethod("codebookEntry","factor",function(x){
+
+  spec <- c("Storage mode:"=storage.mode(x))
+  spec <- if(is.ordered(x)) c(spec,
+            "Ordered factor with"=paste(nlevels(x),"levels"))
+          else c(spec,
+            "Factor with"=paste(nlevels(x),"levels"))
+            
+  isna <- is.na(x)
+  NAs <- sum(isna)
+
+  counts <- table(x)
+  tab <- cbind(counts,100*counts/sum(counts))
+  if(any(isna)) {
+      labs <- sQuote(levels(x))
+      labs <- paste(format(c(1:nlevels(x),NA),justify="right"),
+                    format(c(labs,""),justify="left")
+                    )
+      tab <- rbind(tab,c(NAs,NA))
+      counts <- c(counts,NAs)
+      tab <- cbind(tab,100*counts/sum(counts))
+    }
+  else {
+      labs <- sQuote(levels(x))
+      labs <- paste(format(1:nlevels(x),justify="right"),
+                    format(labs,justify="left")
+                    )
+  }
+  rownames(tab) <- labs
+  
+  names(dimnames(tab))[1] <- "Levels"
+  stats <- list(tab=tab)
+  stats <- c(stats,list(NAs = NAs))
+  new("codebookEntry",
+    spec = spec,
+    stats = stats,
+    annotation = NULL
+  )
+})
+
 
 codebookStatsCateg <- function(x)
     list(tab=Table(x,style="codebook"))
@@ -65,15 +138,6 @@ setMethod("show","codebook",function(object){
   writeLines(out)
 })
 
-# setMethod("Write",signature(x="codebook"),
-#           function(x,file=stdout(),...){
-#             width <- getOption("width")
-#             toprule <- paste(rep("=",width),collapse="")
-#             midrule <- paste(rep("-",width),collapse="")
-#             out <- mapply(format,x=x,name=names(x),toprule=toprule,midrule=midrule)
-#             out <- unlist(out)
-#             writeLines(out,con=file)
-#           })
 
 Write.codebook <- function(x,file=stdout(),...){
   width <- getOption("width")
@@ -87,8 +151,8 @@ Write.codebook <- function(x,file=stdout(),...){
 
 setMethod("format","codebookEntry",
   function(x,name="",width=getOption("width"),
-          toprule=toprule,
-          midrule=midrule
+          toprule=paste(rep("=",width),collapse=""),
+          midrule=paste(rep("-",width),collapse="")
       ){
 
   annot <- x@annotation

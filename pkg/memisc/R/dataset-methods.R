@@ -404,7 +404,7 @@ print.data.set <- function(x,max.obs=Inf,width=Inf,...){
     ww <- nchar(res[1,])
     res <- rbind(res,sapply(ww,mkdots))
     res <- apply(res,1,paste,collapse=" ")
-    res <- c(res,paste("(",length(res)," of ",nrow.x," observations shown)",sep=""))
+    res <- c(res,paste("(",length(res)-2," of ",nrow.x," observations shown)",sep=""))
     }
   else
     res <- apply(res,1,paste,collapse=" ")
@@ -527,7 +527,17 @@ setMethod("unique","data.set",function(x, incomparables = FALSE, ...){
 fapply.data.set <- function(formula,data,...)
   fapply.default(formula,data=as.data.frame(data,optional=TRUE),...)
   
-  
+setMethod("as.data.set","list",function(x,row.names=NULL,...){
+  class(x) <- "data.frame"
+  if(length(row.names)){
+    if(length(row.names)!=nrow(x)) stop("row.names argument has wrong length")
+    attr(x,"row.names") <- row.names
+  }
+  else
+    attr(x,"row.names") <- seq_len(nrow(x))
+  new("data.set",x)
+})
+
 ## Copied and modified from base package
 ## Original copyright (C) 1995-2013 The R Core Team
 
