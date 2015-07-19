@@ -20,13 +20,22 @@
       
       \item \code{mtable} now handles multi-equation models better, in particular 
       if the model objects supplied as arguments vary in the number and/or names
-      of the equations. There is also a new option to place confidence intervals to the right of coefficient
-      estimates. Further \code{mtable} gains a \code{show.baselevel} options, which
-      allows to suppress the display of baseline categories of dummy variables,
-      when dummy variable coefficients are displayed. One can now use a \code{summaryTemplate}
-      generic function for formatting model summaries, in addition to set the template by 
-      \code{setSummaryTemplate}. There is also a new argument \code{sdigits} for \code{mtable}
-      formatting method functions.
+      of the equations. There is also a new option to place confidence intervals 
+      to the right of coefficient estimates. Further \code{mtable} gains
+      the following optional aguments:
+      \itemize{
+        \item \code{show.baselevel}, which
+              allows to suppress the display of baseline categories of dummy variables,
+              when dummy variable coefficients are displayed
+        \item \code{sdigits}, to specify the number of digits of summary statistics.
+        \item \code{gs.options}, to pass optional arguments to \code{getSummary}, allowin
+        for more flexibility in creating tables.
+      }
+      One can now use a \code{summaryTemplate}
+      generic function for formatting model summaries, in addition to set the template by
+      \code{setSummaryTemplate}.  
+      Finally, parts of "mtables" can be extracted using the \code{[} operator as
+      with matrices, and "mtables" can now also be concatenated.
       
       \item There is now an object class for survey items containing dates, called
       \code{"datetime.item"}

@@ -5,6 +5,10 @@
 \alias{print.mtable}
 \alias{write.mtable}
 \alias{toLatex.mtable}
+\alias{dim.mtable}
+\alias{dimnames.mtable}
+\alias{[.mtable}
+\alias{c.mtable}
 
 \title{Comparative Table of Model Estimates}
 \description{
@@ -13,11 +17,13 @@
 \usage{
 mtable(\dots,coef.style=getOption("coef.style"),
     summary.stats=TRUE,
+    signif.symbols=getOption("signif.symbols"),
     factor.style=getOption("factor.style"),
     getSummary=eval.parent(quote(getSummary)),
     float.style=getOption("float.style"),
     digits=min(3,getOption("digits")),
-    sdigits=min(1,digits)
+    sdigits=min(1,digits),
+    gs.options=NULL
   )
 \method{relabel}{mtable}(x, \dots, gsub = FALSE, fixed = !gsub, warn = FALSE)
 
@@ -49,6 +55,10 @@ write.mtable(object,file="",\dots)
         produced by \code{getSummary} are reported.
         This argument may also contain a character vector with
         the names of the summary statistics to report}
+     \item{signif.symbols}{a named numeric vector to specify
+          the "significance levels" and corresponding symbols. 
+          The numeric elements define the significance levels,
+          the attached names define the associated symbols.}
      \item{factor.style}{a character string that specifies the style in
         which factor contrasts are labled. See \code{\link{factor.style}}.}
      \item{getSummary}{a function that computes model-related statistics that
@@ -61,6 +71,8 @@ write.mtable(object,file="",\dots)
         \code{\link{getSummaryTemplate}}
         }
      \item{sdigits}{integer; number of digits after decimal dot for summary statistics.}
+     \item{gs.options}{an optional list of arguments passed on to
+           \code{getSummary}}
      \item{x, object}{an object of class \code{mtable}}
      \item{gsub, warn, fixed}{logical values, see \code{\link{relabel}}}
      \item{target}{a character string which indicates the target format.
@@ -94,6 +106,8 @@ write.mtable(object,file="",\dots)
 
 }
 \examples{
+#### Basic workflow
+
 lm0 <- lm(sr ~ pop15 + pop75,              data = LifeCycleSavings)
 lm1 <- lm(sr ~                 dpi + ddpi, data = LifeCycleSavings)
 lm2 <- lm(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
@@ -124,6 +138,8 @@ file.show(file123)
 \dontrun{texfile123 <- "mtable123.tex"
 write.mtable(mtable123,forLaTeX=TRUE,file=texfile123)
 file.show(texfile123)}
+
+#### Examples with UC Berkeley data
 
 berkeley <- Aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 
@@ -180,5 +196,19 @@ berkfull <- glm(cbind(Admitted,Rejected)~Dept/Gender - 1,
                       data=berkeley,family="binomial")
 relabel(mtable(berkfull),Dept="Department",gsub=TRUE)
 
+#### Array-like semantics
+
+mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
+    summary.stats=c("sigma","R-squared","F","p","N"))
+
+dim(mtable123)
+dimnames(mtable123)
+mtable123[c("dpi","ddpi"),
+          c("Model 2","Model 3")]
+
+#### Concatention
+mt01 <- mtable(lm0,lm1,summary.stats=c("R-squared","N"))
+mt12 <- mtable(lm1,lm2,summary.stats=c("R-squared","F","N"))
+c(mt01,mt12) # not that this makes sense, but ...
 }
 \keyword{misc}

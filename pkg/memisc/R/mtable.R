@@ -307,11 +307,13 @@ bind_arrays <- function(args,along=1){
 mtable <- function(...,
                     coef.style=getOption("coef.style"),
                     summary.stats=TRUE,
+                    signif.symbols=getOption("signif.symbols"),
                     factor.style=getOption("factor.style"),
                     getSummary=eval.parent(quote(getSummary)),
                     float.style=getOption("float.style"),
                     digits=min(3,getOption("digits")),
-                    sdigits=min(1,digits)
+                    sdigits=min(1,digits),
+                    gs.options=NULL
                     ){
   args <- list(...)
   if(length(args)==1 && inherits(args[[1]],"by"))
@@ -325,7 +327,19 @@ mtable <- function(...,
 
   arg.classes <- lapply(args,class)
   if(any(sapply(arg.classes,length))==0) stop("don\'t know how to handle these arguments")
-  summaries <- lapply(args,getSummary)
+  
+  if(length(options)){
+    summaries.call <- as.call(
+      c(list(as.name("lapply"),
+             as.name("args"),
+             FUN=as.name("getSummary")),
+        gs.options
+      ))
+    summaries <- eval(summaries.call)
+  }
+  else
+    summaries <- lapply(args,getSummary)
+  
   calls <- lapply(summaries,function(x)x$call)
   names(calls) <- argnames
 
@@ -341,8 +355,11 @@ mtable <- function(...,
                         xlevels=xlevels,
                         factor.style=factor.style)
         adims <- if(length(dim(coef))==2) 1 else c(1,3)
-        ans <- apply(coef,adims,function(x)applyTemplate(x,
-            template=ctemplate,float.style=float.style,digits=digits))
+        ans <- apply(coef,adims,applyTemplate,
+                                template=ctemplate,
+                                float.style=float.style,
+                                digits=digits,
+                                signif.symbols=signif.symbols)
         if(length(dim(ctemplate))){
           newdims <- c(dim(ctemplate),dim(ans)[-1])
           newdimnames <- c(dimnames(ctemplate),dimnames(ans)[-1])
@@ -380,7 +397,9 @@ mtable <- function(...,
     sumstats <- lapply(seq(n.args),function(i){
           sumstat <- summaries[[i]]$sumstat
           stemplate <- stemplates[[i]]
-          sumstat <- drop(applyTemplate(sumstat,template=stemplate,digits=sdigits))
+          sumstat <- drop(applyTemplate(sumstat,
+                                        template=stemplate,
+                                        digits=sdigits))
           sumstat[nzchar(sumstat)]
         })
     sumstats <- clct.vectors(sumstats)
@@ -462,21 +481,6 @@ write.mtable <- function(object,file="",...){
   cat(f,file=file,sep="")
 }
 
-
-
-drop.mtable <- function(x,...){
-  cdims <- dim(x$coefficients)
-  ckeep <- cdims > 1
-  x$coefficients <- drop(x$coefficients)
-
-  newdims <- rep(NA,length(cdims))
-  newdims[ckeep] <- seq(length(which(ckeep)))
-  as.col <- newdims[x$as.col]
-  as.row <- newdims[x$as.row]
-  x$as.col <- as.col[is.finite(as.col)]
-  x$as.row <- as.row[is.finite(as.row)]
-  x
-}
 
 relabel.mtable <- function(x,...,gsub=FALSE,fixed=!gsub,warn=FALSE){
  relabelTab <- function(tab){
