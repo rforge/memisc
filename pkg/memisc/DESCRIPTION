@@ -1,10 +1,10 @@
 Package: memisc
 Type: Package
 Title: Tools for Management of Survey Data and the Presentation of Analysis Results
-Version: 0.98.8
-Date: 2015-07-20
+Version: 0.99.2
+Date: 2015-01-02
 Author: Martin Elff (with contributions by Christopher N. Lawrence, Dave Atkins, Jason W. Morgan, Achim Zeileis)
-Maintainer: Martin Elff <elff@gmx.com>
+Maintainer: Martin Elff <memisc@elff.eu>
 Description: One of the aims of this package is to make life easier for
         useRs who deal with survey data sets. It provides an
         infrastructure for the management of survey data including
@@ -17,10 +17,10 @@ Description: One of the aims of this package is to make life easier for
         programming, and simulation are provided.
 License: GPL-2
 LazyLoad: Yes
-Depends: R (>= 2.9.0), lattice, stats, methods, utils, MASS
+Depends: R (>= 3.0.0), lattice, stats, methods, utils, MASS
 Suggests: splines, knitr
 Enhances: AER, car, eha, lme4, ordinal, simex 
 Imports: grid
 VignetteBuilder: knitr
-URL: http://www.martin-elff.net/software/memisc/,http://github.com/melff/memisc/
+URL: http://www.elff.eu/software/memisc/,http://github.com/melff/memisc/
 BugReports: http://github.com/melff/memisc/issues

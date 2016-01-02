@@ -19,6 +19,8 @@ mtable(\dots,coef.style=getOption("coef.style"),
     summary.stats=TRUE,
     signif.symbols=getOption("signif.symbols"),
     factor.style=getOption("factor.style"),
+    show.baselevel=getOption("show.baselevel"),
+    baselevel.sep=getOption("baselevel.sep"),
     getSummary=eval.parent(quote(getSummary)),
     float.style=getOption("float.style"),
     digits=min(3,getOption("digits")),
@@ -35,7 +37,9 @@ mtable(\dots,coef.style=getOption("coef.style"),
     center.at=getOption("OutDec"),
     topsep="=",bottomsep="=",sectionsep="-",\dots)
 
-write.mtable(object,file="",\dots)
+write.mtable(object,file="",
+             format=c("delim","LaTeX","HTML"),\dots)
+
 \method{toLatex}{mtable}(object,...)
 }
 \arguments{
@@ -61,11 +65,14 @@ write.mtable(object,file="",\dots)
           the attached names define the associated symbols.}
      \item{factor.style}{a character string that specifies the style in
         which factor contrasts are labled. See \code{\link{factor.style}}.}
+     \item{show.baselevel}{logical; determines whether base levels of factors are indicated
+      for dummy coefficients}
+     \item{baselevel.sep}{character that is used to separate the base level from the 
+           level that a dummy variable represents}
      \item{getSummary}{a function that computes model-related statistics that
         appear in the table. See \code{\link{getSummary}}.}
      \item{float.style}{default format for floating point numbers if
-        no format is specified by \code{coef.style}; see \code{{float.style}}.
-        }
+        no format is specified by \code{coef.style}}.
      \item{digits}{number of significant digits if not specified by
         the template returned from \code{\link{getCoefTemplate}}
         \code{\link{getSummaryTemplate}}
@@ -90,7 +97,8 @@ write.mtable(object,file="",\dots)
      \item{bottomsep}{a character string that is recycled to a bottom rule.}
      \item{sectionsep}{a character string that is recycled to seperate coefficients
         from summary statistics.}
-     \item{file}{a file where to write to; defaults to console output.}
+     \item{file}{name of the file where to write to; defaults to console output.}
+     \item{format}{character string that specifies the desired format.}
 }
 \details{
   \code{mtable} constructs a table of estimates for regression-type models.
@@ -98,11 +106,13 @@ write.mtable(object,file="",\dots)
   such as \code{print.mtable}, \code{toLatex.mtable}, or \code{write.mtable}.
 }
 \value{
-    A call to \code{mtable} results in an object that inherits from \code{mtable}
+    A call to \code{mtable} results in an object of class \code{"mtable"}
     with the following components:
 
-    \item{coefficients}{an array that contains the model coefficients.}
-    \item{summaries}{a matrix that contains the model summaries.}
+    \item{coefficients}{a list that contains the model coefficients,}
+    \item{summaries}{a matrix that contains the model summaries,}
+    \item{calls}{a list of calls that created the model estimates
+          being summarised.}
 
 }
 \examples{
@@ -136,7 +146,7 @@ file.show(file123)
 }
 \dontshow{toLatex(mtable123)}
 \dontrun{texfile123 <- "mtable123.tex"
-write.mtable(mtable123,forLaTeX=TRUE,file=texfile123)
+write.mtable(mtable123,format="LaTeX",file=texfile123)
 file.show(texfile123)}
 
 #### Examples with UC Berkeley data
@@ -210,5 +220,7 @@ mtable123[c("dpi","ddpi"),
 mt01 <- mtable(lm0,lm1,summary.stats=c("R-squared","N"))
 mt12 <- mtable(lm1,lm2,summary.stats=c("R-squared","F","N"))
 c(mt01,mt12) # not that this makes sense, but ...
+c("Group 1"=mt01,
+  "Group 2"=mt12)
 }
 \keyword{misc}

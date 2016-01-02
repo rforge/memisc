@@ -197,8 +197,9 @@ setSummaryTemplate <- function(...){
 prettyNames <- function(coefnames,
                         contrasts,
                         xlevels,
-                        factor.style=getOption("factor.style"),
-                        baselevel.sep=getOption("baselevel.sep")
+                        factor.style,
+                        show.baselevel,
+                        baselevel.sep
                         ){
     termorders <- sapply(strsplit(coefnames,":",fixed=TRUE),length)
     ordergroups <- split(coefnames,termorders)
@@ -206,16 +207,18 @@ prettyNames <- function(coefnames,
                         contrasts=contrasts,
                         xlevels=xlevels,
                         factor.style=factor.style,
-                        baselevel.sep=baselevel.sep)
+                        show.baselevel=show.baselevel,
+                        baselevel.sep=baselevel.sep
+                        )
     unsplit(ordergroups,termorders)
 }
 
 prettyNames1 <- function(str,
                         contrasts,
                         xlevels,
-                        factor.style=getOption("factor.style"),
-                        show.baselevel=getOption("show.baselevel"),
-                        baselevel.sep=getOption("baselevel.sep")
+                        factor.style,
+                        show.baselevel,
+                        baselevel.sep
                         ){
    str <- gsub(":"," x ",str,fixed=TRUE)
    for(f in names(contrasts)){
@@ -309,6 +312,8 @@ mtable <- function(...,
                     summary.stats=TRUE,
                     signif.symbols=getOption("signif.symbols"),
                     factor.style=getOption("factor.style"),
+                    show.baselevel=getOption("show.baselevel"),
+                    baselevel.sep=getOption("baselevel.sep"),
                     getSummary=eval.parent(quote(getSummary)),
                     float.style=getOption("float.style"),
                     digits=min(3,getOption("digits")),
@@ -353,7 +358,9 @@ mtable <- function(...,
         dimnames(coef)[[1]] <- prettyNames(dimnames(coef)[[1]],
                         contrasts=contrasts,
                         xlevels=xlevels,
-                        factor.style=factor.style)
+                        factor.style=factor.style,
+                        show.baselevel=show.baselevel,
+                        baselevel.sep=baselevel.sep)
         adims <- if(length(dim(coef))==2) 1 else c(1,3)
         ans <- apply(coef,adims,applyTemplate,
                                 template=ctemplate,
@@ -424,12 +431,6 @@ mtable <- function(...,
     class="mtable")
 }
 
-
-
-
-
-
-
 format.mtable <- function(x,
                           target=c("print","LaTeX","HTML","delim"),
                           ...){
@@ -441,14 +442,6 @@ format.mtable <- function(x,
          delim=mtable_format_delim(x,...)
          )
 }
-
-
-
-
-
-
-
-
 
 print.mtable <- function(x,center.at=getOption("OutDec"),
       topsep="=",bottomsep="=",sectionsep="-",...){
@@ -472,11 +465,17 @@ toLatex.mtable <- function(object,...){
   class="Latex")
 }
 
-
-write.mtable <- function(object,file="",...){
+write.mtable <- function(object,file="",
+                         format=c("delim","LaTeX","HTML"),
+                         ...){
   l <- list(...)
-  f <- format.mtable(object,target="delim",...)
-  if(isTRUE(l[["forLaTeX"]]))
+  if(isTRUE(l[["forLaTeX"]])) # Avoid breaking old code
+    target <- "LaTeX"
+  else
+    target <- match.arg(format)
+    
+  f <- format.mtable(object,target=target,...)
+  if(target %in% c("LaTeX","HTML"))
     f <- paste(f,"\n",sep="")
   cat(f,file=file,sep="")
 }

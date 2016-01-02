@@ -6,6 +6,7 @@ mtable_format_print <- function(x,
           center.at=getOption("OutDec"),
           align.integers=c("dot","right","left"),
           padding="  ",
+          force.names = FALSE,
           ...
           ){
 
@@ -14,6 +15,8 @@ mtable_format_print <- function(x,
 
   coefs <- x$coefficients
   summaries <- x$summaries
+  
+  num.models <- length(coefs)
   
   coef.dims <- lapply(coefs,dim)
   coef.ldim <- sapply(coef.dims,length)
@@ -34,11 +37,25 @@ mtable_format_print <- function(x,
   
   mtab <- character()
   align.integers <- match.arg(align.integers)
+  
   frmt1 <- function(coefs,summaries){
-    coef.tab <- ftable(coefs,row.vars=c(3,1))
-    coef.tab <- apply(coef.tab,2,centerAt,
-                      at=center.at,
-                      integers=align.integers)
+  
+    if(length(dim(coefs))==3){
+      coef.tab <- apply(coefs,2,centerAt,
+                        at=center.at,
+                        integers=align.integers)
+      if(length(dim(coef.tab))<2)
+        dim(coef.tab) <- c(1,dim(coef.tab))
+      coef.tab <- apply(coef.tab,1,paste,collapse=" ")
+    }
+    else{
+      coef.tab <- apply(coefs,c(2,4),centerAt,
+                        at=center.at,
+                        integers=align.integers)
+      if(length(dim(coef.tab))<3)
+        dim(coef.tab) <- c(1,dim(coef.tab))
+      coef.tab <- apply(coef.tab,c(1,3),paste,collapse=" ")
+    }
     if(grp.coefs){
       if(length(dim(coefs))>3 && dim(coefs)[4]>1)
         coef.tab <- rbind(dimnames(coefs)[[4]],coef.tab)
@@ -46,8 +63,9 @@ mtable_format_print <- function(x,
         coef.tab <- rbind(character(ncol(coef.tab)),coef.tab)
       coef.tab <- apply(coef.tab,2,format,justify="centre")
     }
-    coef.tab <- apply(coef.tab,1,paste,collapse=colsep)
-    if(grp.coefs){
+    if(length(dim(coef.tab)))
+      coef.tab <- apply(coef.tab,1,paste,collapse=colsep)
+    if(grp.coefs && (num.models>1 || force.names)){
       if(length(dim(coefs))>3 && dim(coefs)[4]>1)
         grp.line <- paste(rep(sectionsep,nchar(coef.tab[1])),collapse="")
       else
@@ -61,22 +79,56 @@ mtable_format_print <- function(x,
     summaries <- format(summaries)
     as.matrix(format(c(coef.tab,summaries),justify="centre"))
   }
-  for(n in names(coefs)){
-    mtab <- cbind(mtab,frmt1(coefs[[n]],summaries[,n]))
+  
+  if(length(x$model.groups)){
+    for(i in seq_along(x$model.groups)){
+      
+      mg <- x$model.groups[[i]]
+      mtab.m <- character()
+      
+      for(j in mg){
+        mtab.m <- cbind(mtab.m,frmt1(coefs[[j]],summaries[,j]))
+      }
+      mtab.m <- rbind(names(coefs)[mg],mtab.m)
+      mtab.m <- apply(mtab.m,2,format,justify="centre")
+      mtab.m <- apply(mtab.m,1,paste,collapse=" ")
+      grp.line <- paste(rep(sectionsep,nchar(mtab.m[1])),collapse="")
+      mtab.m <- c(names(x$model.groups)[i],grp.line,mtab.m)
+      mtab.m <- format(mtab.m, justify="centre")
+      mtab <- cbind(mtab,mtab.m)
+    }
+  }
+  else {
+    for(i in 1:length(coefs)){
+      mtab <- cbind(mtab,frmt1(coefs[[i]],summaries[,i]))
+    }    
+    if(num.models>1 || force.names)
+      mtab <- rbind(names(coefs),mtab)
+    mtab <- apply(mtab,2,format,justify="centre")
   }
   
-  
-  mtab <- rbind(names(coefs),mtab)
-  mtab <- apply(mtab,2,format,justify="centre")
+  if(num.models>1 || force.names){
+    if(length(x$model.groups))
+      hdrlines <- if(grp.coefs) 1:5 else 1:3
+    else
+      hdrlines <- if(grp.coefs) 1:3 else 1
+  }
+  else {
+    if(length(x$model.groups))
+      hdrlines <- if(grp.coefs) 1:3 else 1
+    else
+      hdrlines <- if(grp.coefs) 1 else integer(0)
+  } 
 
-  hdrlines <- if(grp.coefs) 1:3 else 1
   smrylines <- seq(to=nrow(mtab),length=nrow(summaries))
   
   ldr <- character(length(coef.names)*coef.dims1)
   ii <- seq(from=1,length=length(coef.names),by=coef.dims1)
   ldr[ii] <- coef.names
-  ldr <- c(character(length(hdrlines)),ldr,rownames(summaries))
+  ldr <- c(ldr,rownames(summaries))
+  ldr <- c(character(length(hdrlines)),ldr)
   ldr <- format(ldr,justify="left")
+  
   mtab <- cbind(ldr,mtab)
   mtab <- apply(mtab,1,paste,collapse=paste0(colsep,colsep))
   mtab <- paste0(padding,mtab,padding)

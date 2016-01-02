@@ -2,19 +2,42 @@
 \alias{show_html}
 \alias{format_html}
 \alias{write_html}
+\alias{df_format_stdstyle}
+\alias{mat_format_stdstyle}
+\alias{format_html.data.frame}
+\alias{format_html.matrix}
 \title{
  Format Objects in HTML, show the HTML Format or Write it to a File
 }
 \description{
- \code{show_html} is for showing objects (at present only
- 'mtable' results) in a convenient way in HTML format. 
+ \code{show_html} is for showing objects in a convenient way in HTML format. 
  \code{write_html} writes them in HTML format into a file.
  Both functions call the generic \code{format_html} for the format conversion.
 }
 \usage{
-format_html(x, ...)
-show_html(x, output = NULL, ...)
-write_html(x, file, ...)
+show_html(x, output = NULL, \dots)
+write_html(x, file, \dots)
+
+format_html(x, \dots)
+
+\method{format_html}{data.frame}(x,
+    toprule=2,midrule=1,bottomrule=2,
+    split.dec=TRUE,
+    row.names=TRUE,
+    digits=getOption("digits"),
+    format="f",
+    style=df_format_stdstyle,
+    margin="2ex auto", 
+    \dots)
+    
+\method{format_html}{matrix}(x,
+    toprule=2,midrule=1,bottomrule=2,
+    split.dec=TRUE,
+    digits=getOption("digits"),
+    format="f",
+    style=mat_format_stdstyle,
+    margin="2ex auto", 
+    \dots)
 }
 \arguments{
   \item{x}{an object.}
@@ -38,23 +61,23 @@ write_html(x, file, ...)
   }
   \item{file}{character string; name or path of the file where to
   write the HTML code to.}
+  \item{toprule}{integer;
+  thickness in pixels of rule at the top of the table.}
+  \item{midrule}{integer;
+  thickness in pixels of rules within the table.}
+  \item{bottomrule}{integer;
+  thickness in pixels of rule at the bottom of the table.}
+  \item{split.dec}{logical; whether numbers should be centered
+  at the decimal point by splitting the table cells.}
+  \item{row.names}{logical; whether row names should be shown/exported.}
+  \item{digits}{number of digits to be shown after the decimal dot. This is only useful, if
+  the "ftable" object was created from a table created with \code{\link{genTable}} or the like.}
+  \item{format}{a format string for \code{\link{formatC}}}
+  \item{style}{string containing the stanard CSS styling of table cells.}
+  \item{margin}{character string, determines the margin and thus
+    the position of the HTML table.}
   \item{\dots}{other arguments, passed on to formatter functions.}
 }
-\examples{
-lm0 <- lm(sr ~ pop15 + pop75,              data = LifeCycleSavings)
-lm1 <- lm(sr ~                 dpi + ddpi, data = LifeCycleSavings)
-lm2 <- lm(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
-
-mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
-                    summary.stats=c("sigma","R-squared","F","p","N"))
-
-(mtable123 <- relabel(mtable123,
-                      "(Intercept)" = "Constant",
-                      pop15 = "Percentage of population under 15",
-                      pop75 = "Percentage of population over 75",
-                      dpi = "Real per-capita disposable income",
-                      ddpi = "Growth rate of real per-capita disp. income"
-))
-
-show_html(mtable123)
+\value{
+   \code{format_html} character string with code suitable for inclusion into a HTML-file.
 }

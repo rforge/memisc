@@ -98,18 +98,24 @@ selCoef <- function(coef,i){
 combine_mtables <- function(...){
   
   args <- list(...)
+  argnames <- names(args)
   
   coefs <- lapply(args,"[[","coefficients")
-  coefs <- do.call("c",coefs)
   
+  model.groups <- lapply(coefs,names)
+  model.names <- unlist(model.groups)
+  if(!length(argnames) || !any(nzchar(argnames)))
+    model.groups <- NULL
+  else {
+    mg <- lapply(model.groups,seq_along)
+    mg1 <- lapply(model.groups,length)
+    mg1 <- cumsum(c(0,mg1[-length(mg1)]))
+    model.groups <- mapply(`+`,mg,mg1,SIMPLIFY=FALSE)
+  }
+  
+  coefs <- do.call("c",coefs)
   nms <- names(coefs)
-  if(length(unique(nms))<length(nms)) {
-    warning("duplicate model names, dropping previous duplicates")
-    keep <- !rev(duplicated(rev(nms)))
-    coefs <- coefs[keep]
-    }
-  else keep <- rep(TRUE,length(nms))
-    
+  
   rown <- lapply(args,rownames)
   rown <- unique(unlist(rown))
   
@@ -119,15 +125,19 @@ combine_mtables <- function(...){
   s.rown <- lapply(smrys,rownames)
   s.rown <- unique(unlist(s.rown))
   smrys <- lapply(smrys,smryxpand,s.rown)
-  smrys <- do.call("cbind",smrys)[,keep]
-  
+  smrys <- do.call("cbind",smrys)
+
+  names(coefs) <- model.names
+  colnames(smrys) <- model.names
+    
   calls <- lapply(args,"[[","calls")
-  calls <- do.call("c",calls)[keep]
+  calls <- do.call("c",calls)
   
   structure(list(
     coefficients=coefs,
     summaries=smrys,
-    calls=calls),
+    calls=calls,
+    model.groups=model.groups),
     class="mtable")
 }
 

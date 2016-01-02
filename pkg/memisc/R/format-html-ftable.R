@@ -1,6 +1,8 @@
 ftable_format_stdstyle <- c(
-  "padding-top"="0px",
+  "padding-top"="3px",
   "padding-bottom"="0px",
+  "padding-left"="0.5ex",
+  "padding-right"="0.5ex",
   "margin-top"="0px",
   "margin-bottom"="0px"
 )
@@ -11,9 +13,11 @@ format_html.ftable <- function(x,
                                digits=0,
                                format="f",
                                toprule=2,midrule=1,bottomrule=2,
-                               split.dec=TRUE,...){
+                               split.dec=TRUE,
+                               style=ftable_format_stdstyle,
+                               margin="2ex auto",
+                               ...){
   
-  style <- ftable_format_stdstyle
   first.col <- c("padding-left"="0.3em")
   toprule <- c("border-top"=paste0(midrule,"px solid"))
   bottomrule <- c("border-bottom"=paste0(midrule,"px solid"))
@@ -46,21 +50,20 @@ format_html.ftable <- function(x,
   
   body <- array(trimws(body),dim=dim(x))
   body[] <- gsub("-","&minus;",body[],fixed=TRUE)
-  if(split.dec){
-    body <- t(apply(body,1,spltDec))
-  }
   
   if(split.dec){
-    body[-n,] <- mk_td_spltDec(body[-n,], style=proc_style(style))
-    body[n,] <- mk_td_spltDec(body[n,], style=proc_style(upd_vect(style,bottomrule)))
+    tmp <- spltDec(body)
+    body <- html_td_spltDec(tmp,style=css(style))
+    dim(body) <- dim(x)
+    colspan <- 3L
   }
   else {
-    bstyle <- upd_vect(style,lrpad)
-    body[-n,] <- mk_td(body[-n,], style=proc_style(upd_vect(bstyle,align.right)))
-    body[n,] <- mk_td(body[n,], style=proc_style(upd_vect(bstyle,align.right,bottomrule)))
+    body <- html_td(body,vectorize=TRUE,style=css(style))
+    dim(body) <- dim(x)
+    colspan <- 1L
   }
   
-  leaders <- array("",dim=c(n,n.row.vars))
+  leaders <- array(list(),dim=c(n,n.row.vars))
   if(show.titles)
     leaders <- cbind(leaders,"")
 
@@ -75,8 +78,6 @@ format_html.ftable <- function(x,
   }
   for(i in 1:n){
     lstyle <- style
-    if(i == 1) lstyle <- upd_vect(lstyle,toprule)
-    if(i == nrow(leaders)) lstyle <- upd_vect(lstyle,bottomrule)
     lstyle1 <- upd_vect(lstyle,first.col)
     lstyle2 <- lstyle
     
@@ -84,12 +85,15 @@ format_html.ftable <- function(x,
       lstyle <- c(lstyle1,rep(lstyle2,ncol(leaders)-1))
     else
       lstyle <- lstyle1
-    leaders[i,] <- mk_td(leaders[i,],style=proc_style(lstyle)) 
+    
+    leaders[i,] <- html_td(leaders[i,],style=css(lstyle),
+                           vectorize=TRUE) 
   }
   
   body <- cbind(leaders,body)
-  body <- apply(body,1,paste0,collapse="")
-  body <- mk_tr(body)
+  nn <- nrow(body)
+  body[nn,] <- lapply(body[nn,],setStyle,bottomrule)
+  body <- as.html_group(apply(body,1,html_tr))
   
   header <- list()
   mm <- 1
@@ -104,63 +108,65 @@ format_html.ftable <- function(x,
     cv <- rep(cv,m%/%mm)
     
     hstyle <- upd_vect(style,align.center,lrpad)
-    if(i == 1 && !(show.titles && n.col.vars == 1))
-      hstyle <- upd_vect(hstyle,toprule)
-    if(i == n.col.vars)
-      hstyle <- upd_vect(hstyle,midrule)
-    if(any(nzchar(hstyle)))
-      
-    
+
     if(show.titles){
       if(n.col.vars == 1){
-        hstyle <- upd_vect(hstyle,bottomrule)
-        
-        if(!nzchar(names(col.vars)))
-          hstyle <- upd_vect(hstyle,toprule)
-        
-        htmp1 <- mk_td(c(names(row.vars),""),
-                       style=proc_style(upd_vect(hstyle,align.left)))
+        htmp1 <- html_td(c(names(row.vars),""),
+                         style=css(upd_vect(hstyle,align.left)),
+                         vectorize=TRUE)
       }
       else {
         if(i == n.col.vars){
-          htmp1 <- mk_td(c(names(row.vars),names(col.vars)[i]),
-                         style=proc_style(upd_vect(hstyle,align.left)))
+          htmp1 <- html_td(c(names(row.vars),paste0(names(col.vars)[i],":")),
+                         style=css(upd_vect(hstyle,align.left)),
+                         vectorize=TRUE)
         }
         else
-          htmp1 <- mk_td(c(rep("",n.row.vars),names(col.vars)[i]),
-                         style=proc_style(upd_vect(hstyle,align.left)))
+          htmp1 <- html_td(c(rep("",n.row.vars),paste0(names(col.vars)[i],":")),
+                         style=css(upd_vect(hstyle,align.left)),
+                         vectorize=TRUE)
       }      
     }
     else 
-      htmp1 <- mk_td(rep("",ncol(leaders)),style=proc_style(hstyle))
+      htmp1 <- html_td(rep("",ncol(leaders)),style=css(hstyle),
+                       vectorize=TRUE)
     
-    attribs$style <- proc_style(hstyle)
-    htmp2 <- mk_td(cv,attribs=attribs)
+    if(i==n.col.vars)
+      attribs$style <- css(hstyle)
+    else
+      attribs$style <- css(upd_vect(hstyle,midrule))
+      
+    htmp2 <- setAttribs(html_td(cv,vectorize=TRUE),attribs)
     header <- c(list(c(htmp1,htmp2)),header)
   }
   if(show.titles && n.col.vars == 1){
     if(nzchar(names(col.vars))){
-      hstyle <- upd_vect(style,toprule,lrpad)
-      htmp1 <- mk_td(rep("",ncol(leaders)),
-                     style=proc_style(hstyle))
+      hstyle <- upd_vect(style,lrpad)
+      htmp1 <- html_td(rep("",ncol(leaders)),
+                       style=css(hstyle),
+                       vectorize=TRUE)
       colspan <- ncol(x)
       if(split.dec) 
         colspan <- colspan*3
       attribs <- list(colspan=colspan,
-                      style=proc_style(upd_vect(hstyle,align.center,midrule)))
-      htmp2 <- mk_td(names(col.vars),attribs=attribs)
+                      style=css(upd_vect(hstyle,align.center,midrule)))
+      htmp2 <- setAttribs(html_td(names(col.vars),vectorize=TRUE),attribs)
       header <- c(list(c(htmp1,htmp2)),header)
     }
   }
-  header <- sapply(header,paste0,collapse="")
-  header <- mk_tr(header)
-
-  ans <- c("<table class=\"mtable\" style=\"border-collapse: collapse;\">",
-           header,
-           body,
-           "</table>")
+  header[[1]] <- lapply(header[[1]],setStyle,toprule)
+  lh <- length(header)
+  header[[lh]] <- lapply(header[[lh]],setStyle,midrule)
   
-  ans <- paste0(ans,collapse="\n")
+  header <- html_tr(header,vectorize=TRUE)
+
+  table_style <- c("border-collapse"="collapse")
+  if(length(margin))
+    table_style <- c(table_style,margin=margin)
+  ans <- html_table(c(header,body),class="ftable",
+                                   style=as.css(table_style))
+  
+  ans <- as.character(ans)
   return(ans)
 }
 
