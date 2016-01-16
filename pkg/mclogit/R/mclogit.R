@@ -101,6 +101,16 @@ mclogit <- function(
         warning("removing ",paste(names(const),collapse=",")," from model")
         X <- X[,-const,drop=FALSE]
     }
+    if(!length(start)){
+      drop.coefs <- check.mclogit.drop.coefs(Y,sets,weights,X,
+                                             offset = offset)
+      if(any(drop.coefs)){
+        warning("removing ",paste(colnames(X)[drop.coefs],collapse=",")," from model")
+        X <- X[,!drop.coefs,drop=FALSE]
+      }
+    }
+    
+    
     fit <- mclogit.fit(Y,sets,weights,X,
                         control=control,
                         start = start,
@@ -149,6 +159,27 @@ mclogit <- function(
     else
         class(fit) <- c("mclogit","lm")
     fit
+}
+
+
+check.mclogit.drop.coefs <- function(y,
+                                     s,
+                                     w,
+                                     X,
+                                     offset){
+  nvar <- ncol(X)
+  nobs <- length(y)
+  if(!length(offset))
+    offset <- rep.int(0, nobs)
+  eta <- mclogitLinkInv(y,s,w)
+  pi <- mclogitP(eta,s)
+  y.star <- eta - offset + (y-pi)/pi
+  yP.star <- y.star - rowsum(pi*y.star,s)[s]
+  XP <- X - rowsum(pi*X,s)[s,,drop=FALSE]
+  ww <- w*pi
+  good <- ww > 0
+  wlsFit <- lm.wfit(x=XP[good,,drop=FALSE],y=yP.star[good],w=ww[good])  
+  is.na(wlsFit$coef)
 }
 
 mclogit.fit <- function(
@@ -286,11 +317,13 @@ mclogit.fit.rePQL <- function(
       ){
     #crossprod <- Matrix:::crossprod
     nvar <- ncol(X)
+    nobs <- length(y)
+    if(!length(offset))
+      offset <- rep.int(0, nobs)
+    
     deviance <- Inf
     eta <- mclogitLinkInv(y,s,w)
-    nobs <- length(eta)
-    if (is.null(offset))
-      offset <- rep.int(0, nobs)
+    
     lev.ics <- attr(Z,"col.indices")
     nlev <- length(lev.ics)
     sw <- c(tapply(w,s,"[",1))
@@ -489,7 +522,9 @@ mclogit.fit.rePQL <- function(
       covmat.theta <- solve(Info1.theta)
     }
 
-   
+   coef <- drop(coef)
+   covmat <- as.matrix(covmat)
+   colnames(covmat) <- rownames(covmat) <- names(coef)
 
    names(theta) <- names(lev.ics)
    colnames(covmat.theta) <- rownames(covmat.theta) <- names(theta)
@@ -499,7 +534,7 @@ mclogit.fit.rePQL <- function(
    model.df <- ncol(X) + length(theta)
    resid.df <- resid.df-model.df
    return(list(
-      coefficients = drop(coef),
+      coefficients = coef,
       varPar = theta,
       chisq.theta = chisq.theta,
       random.effects = reff,
@@ -636,7 +671,18 @@ print.mclogit <- function(x,digits= max(3, getOption("digits") - 3), ...){
     invisible(x)
 }
 
-vcov.mclogit <- function(object,...){
+vcov.mclogit <- function(object,varPar=TRUE,...){
+  if(varPar && length(object$varPar)){
+    cm <- object$covmat
+    cmv <- object$covmat.varPar
+    nms <- colnames(cm)
+    nmsv <- paste0("Var(",colnames(cmv),")")
+    
+    v <- as.matrix(bdiag(cm,cmv))
+    colnames(v) <- rownames(v) <- c(nms,nmsv)
+    return(v)
+  }
+  else
     return(object$covmat)
 }
 
@@ -687,8 +733,8 @@ summary.mclogit <- function(object,dispersion=NULL,correlation = FALSE, symbolic
       varPar.table[,4] <- pvalue.vp
     } else varPar.table <- NULL
 
-    ans <- c(object[c("call","terms","baseline","deviance","contrasts",
-                       "null.deviance","iter","na.action","model.df","residual.df")],
+    ans <- c(object[c("call","terms","deviance","contrasts",
+                       "null.deviance","iter","na.action","model.df","residual.df","N")],
               list(coefficients = coef.table,
                     varPar = varPar.table,
                     cov.coef=object$covmat,
@@ -753,7 +799,7 @@ print.summary.mclogit <-
 
 fitted.mclogit <- function(object,type=c("probabilities","counts"),...){
   weights <- object$weights
-  nobs <- length(weights)
+  
   res <- object$fitted.values
   type <- match.arg(type)
   
